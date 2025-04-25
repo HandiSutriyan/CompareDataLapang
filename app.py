@@ -30,6 +30,21 @@ def clean_std_df(std_df):
 
     return std_df
 
+# Fungsi konversi dari standar ke satuan UUT
+def convert_std_to_uut_unit(value, from_unit, to_unit):
+    if from_unit == to_unit or "-" in (from_unit, to_unit):
+        return value
+    if from_unit == "InHg" and to_unit == "hPa":
+        return value * 33.8639
+    if from_unit == "hPa" and to_unit == "InHg":
+        return value / 33.8639
+    if from_unit == "m/s" and to_unit == "knot":
+        return value / 0.514444
+    if from_unit == "knot" and to_unit == "m/s":
+        return value * 0.514444
+    return value
+
+
 def interpolate(x):
     return x
 def find_correction(x):
@@ -117,6 +132,9 @@ if standard_files and uut_file:
         if std_col != "-" and uut_col != "-":
             header_mapping[std_col] = uut_col
 
+    # Pilihan satuan hanya untuk UUT
+    unit_options = ["-", "hPa", "InHg", "m/s", "knot"]
+    uut_unit = st.selectbox(f"Satuan yang digunakan UUT untuk {uut_col}", options=unit_options, key=f"unit_uut_{uut_col}")
 
     # --- Sinkronisasi Timestamp dan Gabung ---
     df_standard_sorted = df_standard.sort_values(ts_col_std)
@@ -135,14 +153,27 @@ if standard_files and uut_file:
     cols_to_check = list(header_mapping.keys()) + list(header_mapping.values())
     df_merged = df_merged.dropna(subset=cols_to_check)
 
+    known_std_units = {
+        "Tekanan_Standar": "InHg",  # ganti dengan nama kolom sebenarnya
+        "Angin_Standar": "m/s",
+        # Tambahkan sesuai kebutuhan
+    }
+    std_unit = known_std_units.get(std_col, uut_unit)  # fallback jika tidak diketahui
+
+    # Konversi standar ke satuan UUT
+    df_merged[f"{std_col}_converted"] = df_merged[std_col].apply(lambda x: convert_std_to_uut_unit(x, std_unit, uut_unit))
+
+    # Koreksi berdasarkan hasil konversi
+    df_merged[f"koreksi_{std_col}"] = df_merged[uut_col] - df_merged[f"{std_col}_converted"]
+
     st.subheader("📊 Visualisasi dan Koreksi")
     for std_col, uut_col in header_mapping.items():
         if std_col in df_merged.columns and uut_col in df_merged.columns:
             st.write(f"### Perbandingan: {std_col} vs {uut_col}")
 
             fig, ax = plt.subplots(figsize=(10, 5))
-            sns.lineplot(x=df_merged[ts_col_std], y=df_merged[std_col], label=f"Standar - {std_col}", ax=ax, linewidth=2.5)
-            sns.lineplot(x=df_merged[ts_col_std], y=df_merged[uut_col], label=f"UUT - {uut_col}", ax=ax, linewidth=2.5)
+            sns.lineplot(x=df_merged[ts_col_std], y=df_merged[std_col], label=f"Standar", ax=ax, linewidth=2.5)
+            sns.lineplot(x=df_merged[ts_col_std], y=df_merged[uut_col], label=f"UUT", ax=ax, linewidth=2.5)
 
             y_max = max(df_merged[std_col].max(), df_merged[uut_col].max()) + 10
             ax.set_ylim(0, y_max)
