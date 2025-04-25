@@ -19,7 +19,7 @@ def clean_std_df(std_df):
        'QFE_1m', 'StatQNH', 'QNH_1m', 'StatWS', 'WS_1m',
        'StatWD', 'WD_1m', 'StatTG', 'TGMeasQMT103_1m']
     
-    #std_df = std_df.drop(columns='Unnamed: 21') #hapus kolom lebih
+    std_df = std_df.drop(columns='Unnamed: 21') #hapus kolom lebih
     std_df = std_df.drop([0])
     std_df.columns = set_col_std #ubah format header standar
 
