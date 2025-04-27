@@ -11,6 +11,7 @@ with open('correction.json', 'r') as f:
     DB_KOREKSI = json.load(f)
 
 UNIT_LIST = ["hPa","InHg","m/s","knot"]
+UUT_LOGGER = ["Vaisala","CS"]
 
 def convert_columns_to_float(df, exclude_cols):
     for col in df.columns:
@@ -19,22 +20,27 @@ def convert_columns_to_float(df, exclude_cols):
     return df
 
 def clean_std_df(std_df):
-    set_col_std = ['timestamp', 'statP', 'PressureMeas_1m', 'statTA',
-       'TAStat155_1m_1', 'statRH', 'RHStat155_1m_1', 'statSR',
-       'SRMeasQMS101R_1m', 'StatPR', 'PRMeasQMR101_1', 'StatQFE',
-       'QFE_1m', 'StatQNH', 'QNH_1m', 'StatWS', 'WS_1m',
-       'StatWD', 'WD_1m', 'StatTG', 'TGMeasQMT103_1m']
+    std_df.columns = std_df.columns.str.strip()
+    new_header = []
+    for i, col in enumerate(std_df.columns):
+        if 'Unnamed' in col and i > 0:
+            next_col = std_df.columns[i+1] if i+1 < len(std_df.columns) else ''
+            new_header.append(f'Stat_{next_col}')
+        elif i == 0:
+            new_header.append('Timsestamp')
+        else:
+            new_header.append(col)
     
-    std_df = std_df.drop(columns='Unnamed: 21') #hapus kolom lebih
-    std_df = std_df.drop([0])
-    std_df.columns = set_col_std #ubah format header standar
+    std_df.columns = new_header #ubah format header standar
+    std_df = std_df.dropna(axis=1,how='all') #hapus kolom lebih
+    std_df = std_df.drop([0]) #hapus baris lebih
+    std_df = std_df.reset_index(drop=True)
 
     status_cols = [col for col in std_df.columns if col.lower().startswith("stat")]
-    exclude_cols_std = ['timestamp'] + status_cols
+    exclude_cols_std = [std_df.columns[0]] + status_cols
     std_df = convert_columns_to_float(std_df, exclude_cols_std)
 
     return std_df
-
 # Fungsi konversi satuan
 def convert_unit(value, from_unit, to_unit):
     if from_unit == to_unit or "-" in (from_unit, to_unit):
@@ -70,7 +76,7 @@ def cari_koreksi_scipy(id_aws, parameter, nilai_baca):
     return koreksi
 
 
-st.set_page_config(page_title="Kalibrasi Data Tools", layout="wide")
+st.set_page_config(page_title="Kalibrasi AWOS", layout="wide")
 st.title("🛠️ Tools Kalibrasi & Perbandingan Data CSV")
 
 st.markdown("""
@@ -82,6 +88,7 @@ Alat ini membandingkan data kalibrasi antara alat **standar** dan **unit under t
 st.sidebar.header("📂 Upload Data")
 id_std = st.sidebar.selectbox("ID AWS Standar yang digunakan", options= list(DB_KOREKSI.keys()))
 standard_files = st.sidebar.file_uploader("Upload CSV Alat Standar (bisa lebih dari satu)", type=["csv"], accept_multiple_files=True)
+id_logger = st.sidebar.selectbox("jenis Logger UUT yang digunakan", options= list(UUT_LOGGER))
 uut_file = st.sidebar.file_uploader("Upload CSV UUT", type=["csv"])
 
 st.sidebar.markdown("---")
@@ -93,10 +100,15 @@ if st.sidebar.button("❌ Shutdown Aplikasi"):
 if standard_files and uut_file:
     df_standard_list = [pd.read_csv(f) for f in standard_files]
     df_standard = pd.concat(df_standard_list, ignore_index=True)
-    df_uut = pd.read_csv(uut_file)
-
     df_standard = clean_std_df(df_standard)
 
+    if id_logger == "CS":
+        df_uut = pd.read_csv(uut_file, skiprows=1, header=0)
+        df_uut = df_uut.drop([0,1])
+    else:
+        df_uut = pd.read_csv(uut_file)
+    df_uut.dropna(axis=1, how='all')
+    df_uut = df_uut.reset_index(drop=True)
     exclude_cols_uut = df_uut.columns[0]
     df_uut = convert_columns_to_float(df_uut, exclude_cols_uut)
 
@@ -107,8 +119,8 @@ if standard_files and uut_file:
     st.dataframe(df_uut.head())
 
     # --- Pembersihan Header ---
-    st.subheader("🧹 Pembersihan Data Alat Standar")
-    cols_to_drop = st.multiselect("Pilih kolom yang tidak akan digunakan", df_standard.columns)
+    st.subheader("🧹 Pembersihan Kolom Data")
+    cols_to_drop = st.multiselect("Pilih kolom Standar yang tidak akan digunakan", df_standard.columns)
     if cols_to_drop:
         df_standard = df_standard.drop(columns=cols_to_drop)
 
@@ -118,6 +130,10 @@ if standard_files and uut_file:
     if remove_invalid and status_cols:
         invalid_mask = df_standard[status_cols].apply(lambda row: row.str.upper().str.contains("INVALID"), axis=1).any(axis=1)
         df_standard = df_standard[~invalid_mask]
+    
+    cols_uut_drop = st.multiselect("Pilih kolom UUT yang tidak akan digunakan", df_uut.columns)
+    if cols_uut_drop:
+        df_uut = df_uut.drop(columns=cols_uut_drop)
 
     #Inisialisasi header
     std_headers = df_standard.columns.tolist()
@@ -235,6 +251,7 @@ if standard_files and uut_file:
     # Hapus baris yang memiliki nilai kosong pada kolom hasil mapping
     cols_to_check = list(header_mapping.keys()) + list(header_mapping.values())
     df_merged = df_merged.dropna(subset=cols_to_check)
+    df_merged = df_merged.reset_index(drop=True)
     st.subheader("📊 Visualisasi dan Koreksi")
     tabs = st.tabs(header_mapping.keys())
     for tab, param_col in zip(tabs,header_mapping.items()):
