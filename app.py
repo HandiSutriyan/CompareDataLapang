@@ -201,7 +201,7 @@ if standard_files and uut_file:
     sr_uut = st.selectbox(f"Header Radiasi Matahari UUT",["-"] + option_uut, key="sr_uut")
     if sr_std != "-" and sr_uut != "-":
         header_mapping[sr_std] = sr_uut
-        df_standard[f"{sr_std}-terkoreksi"] = df_standard[sr_std]
+ 
 
     st.divider()
     tw_std = st.selectbox(f"Header Suhu Air Standar",["-"] + option_std, key="tw_std")
