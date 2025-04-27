@@ -280,27 +280,6 @@ if standard_files and uut_file:
                     df_summary = df_merged[[ts_col_std, f"{std_col}",f"koreksi-{std_col}",f"{std_col}-terkoreksi", uut_col, f"koreksi_{uut_col}"].copy()]
                 tab.write(df_summary)
 
-    # for std_col, uut_col in header_mapping.items():
-    #     if std_col in df_merged.columns and uut_col in df_merged.columns:
-    #         st.divider()
-    #         st.write(f"### Perbandingan: {std_col} vs {uut_col}")
-
-    #         if uut_col.lower().startswith("wd"):
-    #             df_merged[f"koreksi_{uut_col}"] = (df_merged[f"{std_col}-terkoreksi"] - df_merged[uut_col] + 180) % 360 -180
-    #         else:
-    #             df_merged[f"koreksi_{uut_col}"] = df_merged[f"{std_col}-terkoreksi"] - df_merged[uut_col]
-            
-    #         col1, col2, col3 = st.columns(3)
-    #         col1.metric(f"Mean {std_col}", f"{df_merged[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged[f"{std_col}-terkoreksi"].std():.2g}", border=True)
-    #         col2.metric(f"Mean {uut_col}", f"{df_merged[uut_col].mean():.2f}", f"{df_merged[uut_col].std():.2g}", border=True)
-    #         col3.metric(f"Koreksi {uut_col}", f"{df_merged[f"koreksi_{uut_col}"].mean():.2g}",f"{df_merged[f"koreksi_{uut_col}"].std():.2g}",border=True)
-
-    #         st.line_chart(
-    #             df_merged, 
-    #             x=ts_col_std, 
-    #             y=[f"{std_col}-terkoreksi",uut_col],
-    #             )
-
             
 else:
     st.info("📁 Silakan upload kedua file CSV terlebih dahulu.")
