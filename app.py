@@ -201,7 +201,7 @@ if standard_files and uut_file:
     sr_uut = st.selectbox(f"Header Radiasi Matahari UUT",["-"] + option_uut, key="sr_uut")
     if sr_std != "-" and sr_uut != "-":
         header_mapping[sr_std] = sr_uut
- 
+        df_standard[f"{sr_std}-terkoreksi"] = df_standard[sr_std]
 
     st.divider()
     tw_std = st.selectbox(f"Header Suhu Air Standar",["-"] + option_std, key="tw_std")
@@ -235,47 +235,72 @@ if standard_files and uut_file:
     # Hapus baris yang memiliki nilai kosong pada kolom hasil mapping
     cols_to_check = list(header_mapping.keys()) + list(header_mapping.values())
     df_merged = df_merged.dropna(subset=cols_to_check)
-
     st.subheader("📊 Visualisasi dan Koreksi")
-    for std_col, uut_col in header_mapping.items():
-        if std_col in df_merged.columns and uut_col in df_merged.columns:
-            st.divider()
-            st.write(f"### Perbandingan: {std_col} vs {uut_col}")
+    tabs = st.tabs(header_mapping.keys())
+    for tab, param_col in zip(tabs,header_mapping.items()):
+        std_col = param_col[0]
+        uut_col = param_col[1]
+        with tab:
+            if std_col in df_merged.columns and uut_col in df_merged.columns:
+                tab.write(f"### Perbandingan: {std_col} vs {uut_col}")
 
-            if uut_col.lower().startswith("wd"):
-                df_merged[f"koreksi_{uut_col}"] = (df_merged[f"{std_col}-terkoreksi"] - df_merged[uut_col] + 180) % 360 -180
-            else:
-                df_merged[f"koreksi_{uut_col}"] = df_merged[f"{std_col}-terkoreksi"] - df_merged[uut_col]
+                if uut_col.lower().startswith("wd"):
+                    df_merged[f"koreksi_{uut_col}"] = (df_merged[f"{std_col}-terkoreksi"] - df_merged[uut_col] + 180) % 360 -180
+                else:
+                    df_merged[f"koreksi_{uut_col}"] = df_merged[f"{std_col}-terkoreksi"] - df_merged[uut_col]
+                
+                col1, col2, col3 = tab.columns(3)
+                col1.metric(f"Mean {std_col}", f"{df_merged[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged[f"{std_col}-terkoreksi"].std():.2g}", border=True)
+                col2.metric(f"Mean {uut_col}", f"{df_merged[uut_col].mean():.2f}", f"{df_merged[uut_col].std():.2g}", border=True)
+                col3.metric(f"Koreksi {uut_col}", f"{df_merged[f"koreksi_{uut_col}"].mean():.2g}",f"{df_merged[f"koreksi_{uut_col}"].std():.2g}",border=True)
+
+                tab.line_chart(
+                    df_merged, 
+                    x=ts_col_std, 
+                    y=[f"{std_col}-terkoreksi",uut_col],
+                    )
+                
+                #Buat Unduhan untuk Grafik
+                fig, ax = plt.subplots(figsize=(10, 7))
+                sns.lineplot(x=df_merged[ts_col_std], y=df_merged[f"{std_col}-terkoreksi"], label=f"Standar", ax=ax, linewidth=2.5)
+                sns.lineplot(x=df_merged[ts_col_std], y=df_merged[uut_col], label=f"UUT", ax=ax, linewidth=2.5)
+
+                ax.set_title(f"Tren {std_col} dan {uut_col}")
+                ax.legend()
+                ax.grid(True)
+                plt.xticks(rotation=45)
+                
+                buf = io.BytesIO()
+                fig.savefig(buf, format="png")
+                buf.seek(0)
+                tab.download_button(label="Unduh Grafik (PNG)",data=buf,file_name=f"grafik_tren_{std_col}_vs_{uut_col}",mime="image/png")
+                if std_col.lower().startswith("sr"):
+                    df_summary = df_merged[[ts_col_std, f"{std_col}", uut_col, f"koreksi_{uut_col}"].copy()]
+                else:
+                    df_summary = df_merged[[ts_col_std, f"{std_col}",f"koreksi-{std_col}",f"{std_col}-terkoreksi", uut_col, f"koreksi_{uut_col}"].copy()]
+                tab.write(df_summary)
+
+    # for std_col, uut_col in header_mapping.items():
+    #     if std_col in df_merged.columns and uut_col in df_merged.columns:
+    #         st.divider()
+    #         st.write(f"### Perbandingan: {std_col} vs {uut_col}")
+
+    #         if uut_col.lower().startswith("wd"):
+    #             df_merged[f"koreksi_{uut_col}"] = (df_merged[f"{std_col}-terkoreksi"] - df_merged[uut_col] + 180) % 360 -180
+    #         else:
+    #             df_merged[f"koreksi_{uut_col}"] = df_merged[f"{std_col}-terkoreksi"] - df_merged[uut_col]
             
-            col1, col2, col3 = st.columns(3)
-            col1.metric(f"Mean {std_col}", f"{df_merged[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged[f"{std_col}-terkoreksi"].std():.2g}", border=True)
-            col2.metric(f"Mean {uut_col}", f"{df_merged[uut_col].mean():.2f}", f"{df_merged[uut_col].std():.2g}", border=True)
-            col3.metric(f"Koreksi {uut_col}", f"{df_merged[f"koreksi_{uut_col}"].mean():.2g}",f"{df_merged[f"koreksi_{uut_col}"].std():.2g}",border=True)
+    #         col1, col2, col3 = st.columns(3)
+    #         col1.metric(f"Mean {std_col}", f"{df_merged[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged[f"{std_col}-terkoreksi"].std():.2g}", border=True)
+    #         col2.metric(f"Mean {uut_col}", f"{df_merged[uut_col].mean():.2f}", f"{df_merged[uut_col].std():.2g}", border=True)
+    #         col3.metric(f"Koreksi {uut_col}", f"{df_merged[f"koreksi_{uut_col}"].mean():.2g}",f"{df_merged[f"koreksi_{uut_col}"].std():.2g}",border=True)
 
-            st.line_chart(
-                df_merged, 
-                x=ts_col_std, 
-                y=[f"{std_col}-terkoreksi",uut_col],
-                )
+    #         st.line_chart(
+    #             df_merged, 
+    #             x=ts_col_std, 
+    #             y=[f"{std_col}-terkoreksi",uut_col],
+    #             )
 
-            #Buat Unduhan untuk Grafik
-            fig, ax = plt.subplots(figsize=(10, 7))
-            sns.lineplot(x=df_merged[ts_col_std], y=df_merged[f"{std_col}-terkoreksi"], label=f"Standar", ax=ax, linewidth=2.5)
-            sns.lineplot(x=df_merged[ts_col_std], y=df_merged[uut_col], label=f"UUT", ax=ax, linewidth=2.5)
-
-            ax.set_title(f"Tren {std_col} dan {uut_col}")
-            ax.legend()
-            ax.grid(True)
-            plt.xticks(rotation=45)
             
-            buf = io.BytesIO()
-            fig.savefig(buf, format="png")
-            buf.seek(0)
-            st.download_button(label="Unduh Grafik (PNG)",data=buf,file_name=f"grafik_tren_{std_col}_vs_{uut_col}",mime="image/png")
-            if std_col.lower().startswith("sr"):
-                df_summary = df_merged[[ts_col_std, f"{std_col}", uut_col, f"koreksi_{uut_col}"].copy()]
-            else:
-                df_summary = df_merged[[ts_col_std, f"{std_col}",f"koreksi-{std_col}",f"{std_col}-terkoreksi", uut_col, f"koreksi_{uut_col}"].copy()]
-            st.write(df_summary)
 else:
     st.info("📁 Silakan upload kedua file CSV terlebih dahulu.")
