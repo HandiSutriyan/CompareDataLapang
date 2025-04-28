@@ -13,12 +13,15 @@ with open('correction.json', 'r') as f:
     DB_KOREKSI = json.load(f)
 
 UNIT_LIST = ["hPa","InHg","m/s","knot"]
-UUT_LOGGER = ["CS","Vaisala"]
+UUT_LOGGER = ["CS","Vaisala/AWI"]
 
 def convert_columns_to_float(df, exclude_cols):
     for col in df.columns:
         if col not in exclude_cols:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
+            try:
+                df[col] = df[col].str.replace(',', '.').astype(float) #konversi desimal yang pakai koma
+            except (ValueError, AttributeError):
+                df[col] = pd.to_numeric(df[col], errors='coerce') #konversi desimal yang pakai titik
     return df
 
 def clean_std_df(std_df):
@@ -104,10 +107,11 @@ if standard_files and uut_file:
     df_standard = clean_std_df(df_standard)
 
     if id_logger == "CS":
-        df_uut = pd.read_csv(uut_file, skiprows=1, header=0)
+        df_uut = pd.read_csv(uut_file,sep=None, engine='python', skiprows=1, header=0)
         df_uut = df_uut.drop([0,1])
     else:
-        df_uut = pd.read_csv(uut_file)
+        df_uut = pd.read_csv(uut_file,sep=None, engine='python')
+        
     df_uut.dropna(axis=1, how='all').reset_index(drop=True)
 
     exclude_cols_uut = df_uut.columns[0]
