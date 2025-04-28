@@ -1,7 +1,7 @@
 import os
 import io
 import streamlit as st
-#from streamlit_datetime_picker import date_time_picker
+
 from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -259,26 +259,29 @@ if standard_files and uut_file:
 
     # Hapus baris yang memiliki nilai kosong pada kolom hasil mapping
     cols_to_check = list(header_mapping.keys()) + list(header_mapping.values())
-    df_merged = df_merged.dropna(subset=cols_to_check)
-    df_merged = df_merged.reset_index(drop=True)
+    df_merged = df_merged.dropna(subset=cols_to_check).reset_index(drop=True)
+
     st.subheader("📊 Visualisasi dan Koreksi")
 
     st.write("Pilih rentang waktu")
     available_times = df_merged[ts_col_std].dt.strftime('%H:%M').unique().tolist()
     #st.write(available_times)
 
-    col_t1,col_t2 = st.columns(2)
-    start_date = col_t1.date_input("Tanggal mulai:",
-                                   value=df_merged[ts_col_std].min().date(),
-                                   min_value=df_merged[ts_col_std].min().date(),
-                                   max_value=df_merged[ts_col_std].max().date())
-    start_time = col_t2.selectbox("Pilih waktu", available_times, key="start_time")
+    time_list = df_merged[ts_col_std]
+    #st.write(time_list)
+    if time_list :
+        col_t1,col_t2 = st.columns(2)
+        start_date = col_t1.date_input("Tanggal mulai:",
+                                    value= time_list.min().date(),
+                                    min_value=time_list.min().date(),
+                                    max_value=time_list.max().date())
+        start_time = col_t2.selectbox("Pilih waktu", available_times, key="start_time")
 
-    end_date = col_t1.date_input("Tanggal selesai:",
-                                   value=df_merged[ts_col_std].max().date(),
-                                   min_value=df_merged[ts_col_std].min().date(),
-                                   max_value=df_merged[ts_col_std].max().date())
-    end_time = col_t2.selectbox("Pilih waktu", available_times,index=len(available_times)-1, key="end_time")
+        end_date = col_t1.date_input("Tanggal selesai:",
+                                    value=df_merged[ts_col_std].max().date(),
+                                    min_value=time_list.min().date(),
+                                    max_value=time_list.max().date())
+        end_time = col_t2.selectbox("Pilih waktu", available_times,index=len(available_times)-1, key="end_time")
 
     start_datetime = datetime.strptime(f"{start_date} {start_time}", "%Y-%m-%d %H:%M")
     end_datetime = datetime.strptime(f"{end_date} {end_time}", "%Y-%m-%d %H:%M")
@@ -323,7 +326,8 @@ if standard_files and uut_file:
                 buf = io.BytesIO()
                 fig.savefig(buf, format="png")
                 buf.seek(0)
-                tab.download_button(label="Unduh Grafik (PNG)",data=buf,file_name=f"grafik_tren_{std_col}_vs_{uut_col}",mime="image/png")
+                tab.download_button(label="Unduh Grafik (PNG)",data=buf,file_name=f"grafik_tren_{uut_col}",mime="image/png", key=std_col)
+
                 if std_col.lower().startswith("sr"):
                     df_summary = df_merged_filtered[[ts_col_std, f"{std_col}", uut_col, f"koreksi_{uut_col}"].copy()]
                 else:

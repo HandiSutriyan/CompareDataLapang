@@ -1,5 +1,5 @@
 {
-    "AWS1":{
+    "AWS-1":{
         "TT":[
             {"setpoin":0.29,"koreksi":-0.21},
             {"setpoin":10.27,"koreksi":-0.04},
@@ -45,7 +45,106 @@
             {"setpoin":360,"koreksi":0}
         ]
     },
-    "AWS6":{
+    "AWS-2":{
+        "TT":[
+            {"setpoin":0.17,"koreksi":-0.08},
+            {"setpoin":10.24,"koreksi":-0.02},
+            {"setpoin":20.26,"koreksi":0.03},
+            {"setpoin":30.27,"koreksi":0.07},
+            {"setpoin":40.27,"koreksi":0.08}
+        ],
+        "RH":[
+            {"setpoin":22.22,"koreksi":-2.7},
+            {"setpoin":32.0,"koreksi":-2.5},
+            {"setpoin":41.82,"koreksi":-2.2},
+            {"setpoin":51.69,"koreksi":-1.8},
+            {"setpoin":61.26,"koreksi":-1.2},
+            {"setpoin":70.55,"koreksi":-0.2},
+            {"setpoin":80.13,"koreksi":0.5},
+            {"setpoin":92.97,"koreksi":2}
+        ],
+        "PP":[
+            {"setpoin":700.12,"koreksi":-0.110},
+            {"setpoin":750.11,"koreksi":-0.096},
+            {"setpoin":800.09,"koreksi":-0.084},
+            {"setpoin":850.04,"koreksi":-0.046},
+            {"setpoin":900.04,"koreksi":-0.042},
+            {"setpoin":950.01,"koreksi":-0.026},
+            {"setpoin":999.98,"koreksi":0.002},
+            {"setpoin":1049.96,"koreksi":0.021},
+            {"setpoin":1099.76,"koreksi":0.041}
+        ],
+        "WS":[
+            {"setpoin":0.5,"koreksi":0.44},
+            {"setpoin":1.6,"koreksi":0.39},
+            {"setpoin":5.1,"koreksi":0.42},
+            {"setpoin":7.0,"koreksi":0.40},
+            {"setpoin":10.6,"koreksi":0.46},
+            {"setpoin":14.7,"koreksi":0.36},
+            {"setpoin":20.1,"koreksi":0.23}
+        ],
+        "WD":[
+            {"setpoin":0,"koreksi":-1},
+            {"setpoin":89,"koreksi":0.7},
+            {"setpoin":179,"koreksi":1},
+            {"setpoin":271,"koreksi":-1.30},
+            {"setpoin":360,"koreksi":-1}
+        ]
+    },
+    "AWS-3":{
+        "TT":[
+            {"setpoin":0.21,"koreksi":-0.12},
+            {"setpoin":10.21,"koreksi":0.01},
+            {"setpoin":20.17,"koreksi":0.12},
+            {"setpoin":30.13,"koreksi":0.20},
+            {"setpoin":40.15,"koreksi":0.20}
+        ],
+        "RH":[
+            {"setpoin":20.29,"koreksi":-0.8},
+            {"setpoin":30.33,"koreksi":-0.8},
+            {"setpoin":40.19,"koreksi":-0.6},
+            {"setpoin":50.21,"koreksi":-0.4},
+            {"setpoin":60.19,"koreksi":-0.1},
+            {"setpoin":69.97,"koreksi":0.4},
+            {"setpoin":79.85,"koreksi":0.9},
+            {"setpoin":93.35,"koreksi":1.6}
+        ],
+        "PP":[
+            {"setpoin":700.15,"koreksi":-0.138},
+            {"setpoin":750.15,"koreksi":-0.133},
+            {"setpoin":800.13,"koreksi":-0.124},
+            {"setpoin":850.12,"koreksi":-0.123},
+            {"setpoin":900.11,"koreksi":-0.112},
+            {"setpoin":950.11,"koreksi":-0.121},
+            {"setpoin":1000.11,"koreksi":0.126},
+            {"setpoin":1050.09,"koreksi":0.112},
+            {"setpoin":1099.90,"koreksi":0.107}
+        ],
+        "WS":[
+            {"setpoin":0.6,"koreksi":0.34},
+            {"setpoin":1.6,"koreksi":0.38},
+            {"setpoin":5.2,"koreksi":0.40},
+            {"setpoin":7.1,"koreksi":0.42},
+            {"setpoin":10.6,"koreksi":0.44},
+            {"setpoin":14.6,"koreksi":0.34},
+            {"setpoin":20.2,"koreksi":0.25}
+        ],
+        "WD":[
+            {"setpoin":0,"koreksi":0},
+            {"setpoin":89,"koreksi":0.70},
+            {"setpoin":179,"koreksi":1},
+            {"setpoin":269,"koreksi":0.70},
+            {"setpoin":360,"koreksi":0}
+        ],
+        "WT":[
+            {"setpoin":0.27,"koreksi":-0.005},
+            {"setpoin":10.22,"koreksi":-0.032},
+            {"setpoin":20.29,"koreksi":-0.044},
+            {"setpoin":30.16,"koreksi":-0.060},
+            {"setpoin":40.11,"koreksi":-0.068}
+        ]
+    },
+    "AWS-6":{
         "WT":[
             {"setpoin":0.26,"koreksi":0.005},
             {"setpoin":10.19,"koreksi":-0.004},
