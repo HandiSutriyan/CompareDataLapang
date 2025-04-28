@@ -12,7 +12,6 @@ import json
 with open('correction.json', 'r') as f:
     DB_KOREKSI = json.load(f)
 
-LOGO = './bmkg.png'
 UNIT_LIST = ["hPa","InHg","m/s","knot"]
 UUT_LOGGER = ["CS","Vaisala/AWI"]
 
@@ -81,8 +80,8 @@ def cari_koreksi_scipy(id_aws, parameter, nilai_baca):
     return koreksi
 
 
-st.set_page_config(page_title="Kalibrasi AWOS/AWS", layout="wide")
-st.title("🛠️ Tools Kalibrasi & Data")
+st.set_page_config(page_title="Kalibrasi AWOS", layout="wide")
+st.title("🛠️ Tools Kalibrasi & Perbandingan Data CSV")
 
 st.markdown("""
 Alat ini membandingkan data kalibrasi antara alat **standar** dan **unit under test (UUT)**.
@@ -90,10 +89,7 @@ Alat ini membandingkan data kalibrasi antara alat **standar** dan **unit under t
 
 
 # --- Upload File ---
-st.logo(LOGO,size="large", icon_image=LOGO)
-st.sidebar.header("Laboratorium Kalibrasi BMKG Pusat")
-st.sidebar.divider()
-st.sidebar.subheader("📂 Upload Data")
+st.sidebar.header("📂 Upload Data")
 id_std = st.sidebar.selectbox("ID AWS Standar yang digunakan", options= list(DB_KOREKSI.keys()))
 standard_files = st.sidebar.file_uploader("Upload CSV Alat Standar (bisa lebih dari satu)", type=["csv"], accept_multiple_files=True)
 id_logger = st.sidebar.selectbox("jenis Logger UUT yang digunakan", options= list(UUT_LOGGER))
@@ -115,7 +111,7 @@ if standard_files and uut_file:
         df_uut = df_uut.drop([0,1])
     else:
         df_uut = pd.read_csv(uut_file,sep=None, engine='python')
-
+        
     df_uut.dropna(axis=1, how='all').reset_index(drop=True)
 
     exclude_cols_uut = df_uut.columns[0]
