@@ -1,7 +1,7 @@
 import os
 import io
 import streamlit as st
-#from streamlit_datetime_picker import date_time_picker
+
 from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -12,7 +12,6 @@ import json
 with open('correction.json', 'r') as f:
     DB_KOREKSI = json.load(f)
 
-LOGO = './bmkg.png'
 UNIT_LIST = ["hPa","InHg","m/s","knot"]
 UUT_LOGGER = ["CS","Vaisala/AWI"]
 
@@ -60,7 +59,6 @@ def convert_unit(value, from_unit, to_unit):
         return value * 0.514444
     return value
 
-
 def cari_koreksi_scipy(id_aws, parameter, nilai_baca):
     
     daftar_koreksi = DB_KOREKSI[id_aws][parameter]
@@ -81,8 +79,8 @@ def cari_koreksi_scipy(id_aws, parameter, nilai_baca):
     return koreksi
 
 
-st.set_page_config(page_title="Kalibrasi AWOS/AWS", layout="wide")
-st.title("🛠️ Tools Kalibrasi & Data")
+st.set_page_config(page_title="Kalibrasi AWOS", layout="wide")
+st.title("🛠️ Kalibrasi & Perbandingan Data")
 
 st.markdown("""
 Alat ini membandingkan data kalibrasi antara alat **standar** dan **unit under test (UUT)**.
@@ -90,13 +88,13 @@ Alat ini membandingkan data kalibrasi antara alat **standar** dan **unit under t
 
 
 # --- Upload File ---
-st.logo(LOGO,size="large", icon_image=LOGO)
+st.logo('logo-bmkg.png',size="large", icon_image='logo-bmkg.png')
 st.sidebar.header("Laboratorium Kalibrasi BMKG Pusat")
 st.sidebar.divider()
 st.sidebar.subheader("📂 Upload Data")
 id_std = st.sidebar.selectbox("ID AWS Standar yang digunakan", options= list(DB_KOREKSI.keys()))
 standard_files = st.sidebar.file_uploader("Upload CSV Alat Standar (bisa lebih dari satu)", type=["csv"], accept_multiple_files=True)
-id_logger = st.sidebar.selectbox("jenis Logger UUT yang digunakan", options= list(UUT_LOGGER))
+id_logger = st.sidebar.selectbox("Jenis Logger UUT", options= list(UUT_LOGGER))
 uut_file = st.sidebar.file_uploader("Upload CSV UUT", type=["csv"])
 
 st.sidebar.markdown("---")
@@ -115,7 +113,7 @@ if standard_files and uut_file:
         df_uut = df_uut.drop([0,1])
     else:
         df_uut = pd.read_csv(uut_file,sep=None, engine='python')
-
+        
     df_uut.dropna(axis=1, how='all').reset_index(drop=True)
 
     exclude_cols_uut = df_uut.columns[0]
@@ -126,23 +124,6 @@ if standard_files and uut_file:
     st.dataframe(df_standard.head())
     st.write("### Data UUT")
     st.dataframe(df_uut.head())
-
-    # --- Pembersihan Header ---
-    st.subheader("🧹 Pembersihan Kolom Data")
-    cols_to_drop = st.multiselect("Pilih kolom Standar yang tidak akan digunakan", df_standard.columns)
-    if cols_to_drop:
-        df_standard = df_standard.drop(columns=cols_to_drop)
-
-    # Hapus baris INVALID
-    status_cols = [col for col in df_standard.columns if col.lower().startswith("stat")]
-    remove_invalid = st.checkbox("Hapus baris dengan status INVALID di kolom status", value=True)
-    if remove_invalid and status_cols:
-        invalid_mask = df_standard[status_cols].apply(lambda row: row.str.upper().str.contains("INVALID"), axis=1).any(axis=1)
-        df_standard = df_standard[~invalid_mask]
-    
-    cols_uut_drop = st.multiselect("Pilih kolom UUT yang tidak akan digunakan", df_uut.columns)
-    if cols_uut_drop:
-        df_uut = df_uut.drop(columns=cols_uut_drop)
 
     #Inisialisasi header
     std_headers = df_standard.columns.tolist()
@@ -167,6 +148,23 @@ if standard_files and uut_file:
         st.success("✅ Timestamp berhasil dikonversi.")
     except Exception as e:
         st.error(f"❌ Gagal mengonversi waktu: {e}")
+
+    # --- Pembersihan Header ---
+    st.subheader("🧹 Pembersihan Kolom Data")
+    cols_to_drop = st.multiselect("Pilih kolom Standar yang tidak akan digunakan", df_standard.columns)
+    if cols_to_drop:
+        df_standard = df_standard.drop(columns=cols_to_drop)
+
+    # Hapus baris INVALID
+    status_cols = [col for col in df_standard.columns if col.lower().startswith("stat")]
+    remove_invalid = st.checkbox("Hapus baris dengan status INVALID di kolom status", value=True)
+    if remove_invalid and status_cols:
+        invalid_mask = df_standard[status_cols].apply(lambda row: row.str.upper().str.contains("INVALID"), axis=1).any(axis=1)
+        df_standard = df_standard[~invalid_mask]
+    
+    cols_uut_drop = st.multiselect("Pilih kolom UUT yang tidak akan digunakan", df_uut.columns)
+    if cols_uut_drop:
+        df_uut = df_uut.drop(columns=cols_uut_drop)
 
     # --- Header Mapping ---
     st.subheader("🔀 Mapping Header untuk Perbandingan")
@@ -235,7 +233,6 @@ if standard_files and uut_file:
         header_mapping[tw_std] = tw_uut
         df_standard[f"koreksi-{tw_std}"] = df_standard[tw_std].apply(lambda x: cari_koreksi_scipy(id_std, "WT", x))
         df_standard[f"{tw_std}-terkoreksi"] = df_standard[tw_std] + df_standard[f"koreksi-{tw_std}"]
-
     # --- Sinkronisasi Timestamp dan Gabung ---
     df_standard_sorted = df_standard.sort_values(ts_col_std)
     df_uut_sorted = df_uut.sort_values(ts_col_uut)
@@ -251,76 +248,77 @@ if standard_files and uut_file:
 
     # Hapus baris yang memiliki nilai kosong pada kolom hasil mapping
     cols_to_check = list(header_mapping.keys()) + list(header_mapping.values())
-    df_merged = df_merged.dropna(subset=cols_to_check)
-    df_merged = df_merged.reset_index(drop=True)
+    df_merged = df_merged.dropna(subset=cols_to_check).reset_index(drop=True)
+
     st.subheader("📊 Visualisasi dan Koreksi")
 
-    st.write("Pilih rentang waktu")
-    available_times = df_merged[ts_col_std].dt.strftime('%H:%M').unique().tolist()
-    #st.write(available_times)
 
-    col_t1,col_t2 = st.columns(2)
-    start_date = col_t1.date_input("Tanggal mulai:",
-                                   value=df_merged[ts_col_std].min().date(),
-                                   min_value=df_merged[ts_col_std].min().date(),
-                                   max_value=df_merged[ts_col_std].max().date())
-    start_time = col_t2.selectbox("Pilih waktu", available_times, key="start_time")
+    time_list = df_merged[ts_col_std]
+    if len(time_list) != 0 :
+        st.write("Pilih rentang waktu")
+        available_times = df_merged[ts_col_std].dt.strftime('%H:%M').unique().tolist()
+        #st.write(available_times)
+        col_t1,col_t2 = st.columns(2)
+        start_date = col_t1.date_input("Tanggal mulai:",value= time_list.min().date(), min_value=time_list.min().date(), max_value=time_list.max().date())
+        start_time = col_t2.selectbox("Pilih waktu", available_times, key="start_time")
 
-    end_date = col_t1.date_input("Tanggal selesai:",
-                                   value=df_merged[ts_col_std].max().date(),
-                                   min_value=df_merged[ts_col_std].min().date(),
-                                   max_value=df_merged[ts_col_std].max().date())
-    end_time = col_t2.selectbox("Pilih waktu", available_times,index=len(available_times)-1, key="end_time")
+        end_date = col_t1.date_input("Tanggal selesai:", value=df_merged[ts_col_std].max().date(), min_value=time_list.min().date(), max_value=time_list.max().date())
+        end_time = col_t2.selectbox("Pilih waktu", available_times,index=len(available_times)-1, key="end_time")
 
-    start_datetime = datetime.strptime(f"{start_date} {start_time}", "%Y-%m-%d %H:%M")
-    end_datetime = datetime.strptime(f"{end_date} {end_time}", "%Y-%m-%d %H:%M")
+        start_datetime = datetime.strptime(f"{start_date} {start_time}", "%Y-%m-%d %H:%M")
+        end_datetime = datetime.strptime(f"{end_date} {end_time}", "%Y-%m-%d %H:%M")
+        df_merged_filtered = df_merged[(df_merged[ts_col_std] >= start_datetime)&((df_merged[ts_col_std] <= end_datetime))].reset_index(drop=True)
+        st.write(f'ℹ️ Data dipilih mulai {start_datetime} sampai {end_datetime}')
+        #st.dataframe(df_merged_filtered)
+    
+    
+    if len(header_mapping) != 0:
+        tabs = st.tabs(header_mapping.keys())
+        for tab, param_col in zip(tabs,header_mapping.items()):
+            std_col = param_col[0]
+            uut_col = param_col[1]
+            with tab:
+                if std_col in df_merged_filtered.columns and uut_col in df_merged_filtered.columns:
+                    tab.write(f"### Perbandingan: {std_col} vs {uut_col}")
 
-    df_merged_filtered = df_merged[(df_merged[ts_col_std] >= start_datetime)&((df_merged[ts_col_std] <= end_datetime))].reset_index(drop=True)
-    st.write(f'ℹ️ Data dipilih mulai {start_datetime} sampai {end_datetime}')
-    #st.dataframe(df_merged_filtered)
-    tabs = st.tabs(header_mapping.keys())
-    for tab, param_col in zip(tabs,header_mapping.items()):
-        std_col = param_col[0]
-        uut_col = param_col[1]
-        with tab:
-            if std_col in df_merged_filtered.columns and uut_col in df_merged_filtered.columns:
-                tab.write(f"### Perbandingan: {std_col} vs {uut_col}")
+                    if uut_col.lower().startswith("wd"):
+                        df_merged_filtered[f"koreksi_{uut_col}"] = (df_merged_filtered[f"{std_col}-terkoreksi"] - df_merged_filtered[uut_col] + 180) % 360 -180
+                    else:
+                        df_merged_filtered[f"koreksi_{uut_col}"] = df_merged_filtered[f"{std_col}-terkoreksi"] - df_merged_filtered[uut_col]
+                    
+                    col1, col2, col3 = tab.columns(3)
+                    col1.metric(f"Mean Standar", f"{df_merged_filtered[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged_filtered[f"{std_col}-terkoreksi"].std():.2g}", border=True)
+                    col2.metric(f"Mean UUT", f"{df_merged_filtered[uut_col].mean():.2f}", f"{df_merged_filtered[uut_col].std():.2g}", border=True)
+                    col3.metric(f"Koreksi", f"{df_merged_filtered[f"koreksi_{uut_col}"].mean():.2g}",f"{df_merged_filtered[f"koreksi_{uut_col}"].std():.2g}",border=True)
 
-                if uut_col.lower().startswith("wd"):
-                    df_merged_filtered[f"koreksi_{uut_col}"] = (df_merged_filtered[f"{std_col}-terkoreksi"] - df_merged_filtered[uut_col] + 180) % 360 -180
-                else:
-                    df_merged_filtered[f"koreksi_{uut_col}"] = df_merged_filtered[f"{std_col}-terkoreksi"] - df_merged_filtered[uut_col]
-                
-                col1, col2, col3 = tab.columns(3)
-                col1.metric(f"Mean Standar", f"{df_merged_filtered[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged_filtered[f"{std_col}-terkoreksi"].std():.2g}", border=True)
-                col2.metric(f"Mean UUT", f"{df_merged_filtered[uut_col].mean():.2f}", f"{df_merged_filtered[uut_col].std():.2g}", border=True)
-                col3.metric(f"Koreksi ", f"{df_merged_filtered[f"koreksi_{uut_col}"].mean():.2g}",f"{df_merged_filtered[f"koreksi_{uut_col}"].std():.2g}",border=True)
+                    tab.line_chart(
+                        df_merged_filtered, 
+                        x=ts_col_std, 
+                        y=[f"{std_col}-terkoreksi",uut_col],
+                        )
+                    
+                    #Buat Unduhan untuk Grafik
+                    fig, ax = plt.subplots(figsize=(10, 7))
+                    sns.lineplot(x=df_merged_filtered[ts_col_std], y=df_merged_filtered[f"{std_col}-terkoreksi"], label=f"Standar", ax=ax, linewidth=2.5)
+                    sns.lineplot(x=df_merged_filtered[ts_col_std], y=df_merged_filtered[uut_col], label=f"UUT", ax=ax, linewidth=2.5)
 
-                tab.line_chart(
-                    df_merged_filtered, 
-                    x=ts_col_std, 
-                    y=[f"{std_col}-terkoreksi",uut_col],
-                    )
-                
-                #Buat Unduhan untuk Grafik
-                fig, ax = plt.subplots(figsize=(10, 7))
-                sns.lineplot(x=df_merged_filtered[ts_col_std], y=df_merged_filtered[f"{std_col}-terkoreksi"], label=f"Standar", ax=ax, linewidth=2.5)
-                sns.lineplot(x=df_merged_filtered[ts_col_std], y=df_merged_filtered[uut_col], label=f"UUT", ax=ax, linewidth=2.5)
+                    ax.set_ylim(0, df_merged_filtered[f"{std_col}-terkoreksi"].max() + 10)
+                    ax.set_title(f"Tren {std_col} dan {uut_col}")
+                    ax.legend()
+                    ax.grid(True)
+                    plt.xticks(rotation=45)
+                    #st.pyplot(fig)
+                    
+                    buf = io.BytesIO()
+                    fig.savefig(buf, format="png")
+                    buf.seek(0)
+                    tab.download_button(label="Unduh Grafik (PNG)",data=buf,file_name=f"grafik_tren_{uut_col}.png",mime="image/png", key=std_col)
 
-                ax.set_title(f"Tren {std_col} dan {uut_col}")
-                ax.legend()
-                ax.grid(True)
-                plt.xticks(rotation=45)
-                
-                buf = io.BytesIO()
-                fig.savefig(buf, format="png")
-                buf.seek(0)
-                tab.download_button(label="Unduh Grafik (PNG)",data=buf,file_name=f"grafik_tren_{std_col}_vs_{uut_col}",mime="image/png")
-                if std_col.lower().startswith("sr"):
-                    df_summary = df_merged_filtered[[ts_col_std, f"{std_col}", uut_col, f"koreksi_{uut_col}"].copy()]
-                else:
-                    df_summary = df_merged_filtered[[ts_col_std, f"{std_col}",f"koreksi-{std_col}",f"{std_col}-terkoreksi", uut_col, f"koreksi_{uut_col}"].copy()]
-                tab.write(df_summary)
+                    if std_col.lower().startswith("sr"):
+                        df_summary = df_merged_filtered[[ts_col_std, f"{std_col}", uut_col, f"koreksi_{uut_col}"].copy()]
+                    else:
+                        df_summary = df_merged_filtered[[ts_col_std, f"{std_col}",f"koreksi-{std_col}",f"{std_col}-terkoreksi", uut_col, f"koreksi_{uut_col}"].copy()]
+                    tab.write(df_summary)
             
 else:
     st.info("📁 Silakan upload kedua file CSV terlebih dahulu.")
