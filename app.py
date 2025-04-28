@@ -236,14 +236,6 @@ if standard_files and uut_file:
         df_standard[f"koreksi-{tw_std}"] = df_standard[tw_std].apply(lambda x: cari_koreksi_scipy(id_std, "WT", x))
         df_standard[f"{tw_std}-terkoreksi"] = df_standard[tw_std] + df_standard[f"koreksi-{tw_std}"]
 
-    #header_mapping = {}
-    # for i in range(min(len(std_headers), len(uut_headers))):
-    #     std_col = st.selectbox(f"Header Standar #{i+1}", options=["-"] + std_headers, key=f"std_{i}")
-    #     uut_col = st.selectbox(f"Header UUT #{i+1}", options=["-"] + uut_headers, key=f"uut_{i}")
-    #     if std_col != "-" and uut_col != "-":
-    #         header_mapping[std_col] = uut_col
-
-    
     # --- Sinkronisasi Timestamp dan Gabung ---
     df_standard_sorted = df_standard.sort_values(ts_col_std)
     df_uut_sorted = df_uut.sort_values(ts_col_uut)
@@ -300,9 +292,9 @@ if standard_files and uut_file:
                     df_merged_filtered[f"koreksi_{uut_col}"] = df_merged_filtered[f"{std_col}-terkoreksi"] - df_merged_filtered[uut_col]
                 
                 col1, col2, col3 = tab.columns(3)
-                col1.metric(f"Mean {std_col}", f"{df_merged_filtered[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged_filtered[f"{std_col}-terkoreksi"].std():.2g}", border=True)
-                col2.metric(f"Mean {uut_col}", f"{df_merged_filtered[uut_col].mean():.2f}", f"{df_merged_filtered[uut_col].std():.2g}", border=True)
-                col3.metric(f"Koreksi {uut_col}", f"{df_merged_filtered[f"koreksi_{uut_col}"].mean():.2g}",f"{df_merged_filtered[f"koreksi_{uut_col}"].std():.2g}",border=True)
+                col1.metric(f"Mean Standar", f"{df_merged_filtered[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged_filtered[f"{std_col}-terkoreksi"].std():.2g}", border=True)
+                col2.metric(f"Mean UUT", f"{df_merged_filtered[uut_col].mean():.2f}", f"{df_merged_filtered[uut_col].std():.2g}", border=True)
+                col3.metric(f"Koreksi ", f"{df_merged_filtered[f"koreksi_{uut_col}"].mean():.2g}",f"{df_merged_filtered[f"koreksi_{uut_col}"].std():.2g}",border=True)
 
                 tab.line_chart(
                     df_merged_filtered, 
