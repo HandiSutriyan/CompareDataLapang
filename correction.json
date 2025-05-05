@@ -43,6 +43,13 @@
             {"setpoin":182,"koreksi":-2},
             {"setpoin":271,"koreksi":-1.30},
             {"setpoin":360,"koreksi":0}
+        ],
+        "WT":[
+            {"setpoin":0.27,"koreksi":-0.005},
+            {"setpoin":10.22,"koreksi":-0.032},
+            {"setpoin":20.29,"koreksi":-0.044},
+            {"setpoin":30.16,"koreksi":-0.060},
+            {"setpoin":40.11,"koreksi":-0.068}
         ]
     },
     "AWS-2":{
@@ -89,6 +96,13 @@
             {"setpoin":179,"koreksi":1},
             {"setpoin":271,"koreksi":-1.30},
             {"setpoin":360,"koreksi":-1}
+        ],
+        "WT":[
+            {"setpoin":0.27,"koreksi":-0.005},
+            {"setpoin":10.22,"koreksi":-0.032},
+            {"setpoin":20.29,"koreksi":-0.044},
+            {"setpoin":30.16,"koreksi":-0.060},
+            {"setpoin":40.11,"koreksi":-0.068}
         ]
     },
     "AWS-3":{
@@ -116,9 +130,9 @@
             {"setpoin":850.12,"koreksi":-0.123},
             {"setpoin":900.11,"koreksi":-0.112},
             {"setpoin":950.11,"koreksi":-0.121},
-            {"setpoin":1000.11,"koreksi":0.126},
-            {"setpoin":1050.09,"koreksi":0.112},
-            {"setpoin":1099.90,"koreksi":0.107}
+            {"setpoin":1000.11,"koreksi":-0.126},
+            {"setpoin":1050.09,"koreksi":-0.112},
+            {"setpoin":1099.90,"koreksi":-0.107}
         ],
         "WS":[
             {"setpoin":0.6,"koreksi":0.34},
