@@ -50,9 +50,9 @@ def convert_unit(value, from_unit, to_unit):
     if from_unit == to_unit or "-" in (from_unit, to_unit):
         return value
     if from_unit == "InHg" and to_unit == "hPa":
-        return value * 33.8639
+        return value * 33.86388
     if from_unit == "hPa" and to_unit == "InHg":
-        return value / 33.8639
+        return value / 33.86388
     if from_unit == "m/s" and to_unit == "knot":
         return value / 0.514444
     if from_unit == "knot" and to_unit == "m/s":
@@ -104,7 +104,7 @@ if st.sidebar.button("❌ Shutdown Aplikasi"):
     os._exit(0)  # Menghentikan proses Python
 
 if standard_files and uut_file:
-    df_standard_list = [pd.read_csv(f) for f in standard_files]
+    df_standard_list = [pd.read_csv(f, sep=None, engine='python') for f in standard_files]
     df_standard = pd.concat(df_standard_list, ignore_index=True)
     df_standard = clean_std_df(df_standard)
 
@@ -116,7 +116,7 @@ if standard_files and uut_file:
         
     df_uut.dropna(axis=1, how='all').reset_index(drop=True)
 
-    exclude_cols_uut = df_uut.columns[0]
+    exclude_cols_uut = df_uut.columns[:2]
     df_uut = convert_columns_to_float(df_uut, exclude_cols_uut)
 
     st.subheader("📋 Pratinjau Data")
@@ -233,6 +233,7 @@ if standard_files and uut_file:
         header_mapping[tw_std] = tw_uut
         df_standard[f"koreksi-{tw_std}"] = df_standard[tw_std].apply(lambda x: cari_koreksi_scipy(id_std, "WT", x))
         df_standard[f"{tw_std}-terkoreksi"] = df_standard[tw_std] + df_standard[f"koreksi-{tw_std}"]
+
     # --- Sinkronisasi Timestamp dan Gabung ---
     df_standard_sorted = df_standard.sort_values(ts_col_std)
     df_uut_sorted = df_uut.sort_values(ts_col_uut)
@@ -298,26 +299,39 @@ if standard_files and uut_file:
                         )
                     
                     #Buat Unduhan untuk Grafik
-                    fig, ax = plt.subplots(figsize=(10, 7))
+                    fig, ax = plt.subplots(figsize=(15, 7))
                     sns.lineplot(x=df_merged_filtered[ts_col_std], y=df_merged_filtered[f"{std_col}-terkoreksi"], label=f"Standar", ax=ax, linewidth=2.5)
                     sns.lineplot(x=df_merged_filtered[ts_col_std], y=df_merged_filtered[uut_col], label=f"UUT", ax=ax, linewidth=2.5)
 
-                    ax.set_ylim(0, df_merged_filtered[f"{std_col}-terkoreksi"].max() + 10)
+                    #ax.set_ylim(0, df_merged_filtered[f"{std_col}-terkoreksi"].max() + 10)
                     ax.set_title(f"Tren {std_col} dan {uut_col}")
                     ax.legend()
                     ax.grid(True)
                     plt.xticks(rotation=45)
                     #st.pyplot(fig)
-                    
-                    buf = io.BytesIO()
-                    fig.savefig(buf, format="png")
-                    buf.seek(0)
-                    tab.download_button(label="Unduh Grafik (PNG)",data=buf,file_name=f"grafik_tren_{uut_col}.png",mime="image/png", key=std_col)
-
+                 
+                    # Konversi DataFrame ke CSV string
                     if std_col.lower().startswith("sr"):
                         df_summary = df_merged_filtered[[ts_col_std, f"{std_col}", uut_col, f"koreksi_{uut_col}"].copy()]
                     else:
                         df_summary = df_merged_filtered[[ts_col_std, f"{std_col}",f"koreksi-{std_col}",f"{std_col}-terkoreksi", uut_col, f"koreksi_{uut_col}"].copy()]
+                    
+                    buf = io.BytesIO()
+                    fig.savefig(buf, format="png")
+                    buf.seek(0)
+
+                    csv_buffer = io.BytesIO()
+                    with pd.ExcelWriter(csv_buffer, engine='openpyxl') as writer:
+                        df_summary.to_excel(writer, index=False, sheet_name='Data')
+                        csv_buffer.seek(0)
+                    # Tombol download
+                    col_btn1,col_btn2,spacer = tab.columns([1, 1, 3])
+                    with col_btn1:
+                        col_btn1.download_button(label="📈 Unduh Grafik",data=buf,file_name=f"grafik_tren_{uut_col}.png",mime="image/png", key=std_col)
+                    with col_btn2:
+                        col_btn2.download_button(label="📄 Unduh Tabel", data=csv_buffer, file_name=f"data-komparasi-{uut_col}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
                     tab.write(df_summary)
             
 else:
