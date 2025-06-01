@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.interpolate import interp1d
 import json
+import openpyxl
 
 with open('correction.json', 'r') as f:
     DB_KOREKSI = json.load(f)
@@ -32,7 +33,7 @@ def clean_std_df(std_df):
             next_col = std_df.columns[i+1] if i+1 < len(std_df.columns) else ''
             new_header.append(f'Stat_{next_col}')
         elif i == 0:
-            new_header.append('Timsestamp')
+            new_header.append('Timestamp')
         else:
             new_header.append(col)
     
@@ -131,11 +132,14 @@ if standard_files and uut_file:
 
     # --- Konversi Timestamp ---
     st.subheader("🕒 Sinkronisasi Waktu")
-    ts_col_std = st.selectbox("Pilih kolom timestamp alat standar", std_headers)
-    ts_col_uut = st.selectbox("Pilih kolom timestamp UUT", uut_headers)
+    col_t_std,col_f_std = st.columns(2)
+    col_t_uut,col_f_uut = st.columns(2)
 
-    time_format_std = st.text_input("Format waktu alat standar", value="%m/%d/%y %I:%M:%S %p")
-    time_format_uut = st.text_input("Format waktu UUT", value="%d/%m/%Y %H:%M:%S")  # <<== perbaikan format
+    ts_col_std = col_t_std.selectbox("Pilih kolom timestamp alat standar", std_headers)
+    ts_col_uut = col_t_uut.selectbox("Pilih kolom timestamp UUT", uut_headers)
+
+    time_format_std = col_f_std.text_input("Format waktu alat standar", value="%m/%d/%y %I:%M:%S %p")
+    time_format_uut = col_f_uut.text_input("Format waktu UUT", value="%d/%m/%Y %H:%M:%S")  # <<== perbaikan format
 
     try:
         df_standard[ts_col_std] = pd.to_datetime(df_standard[ts_col_std], format=time_format_std, errors='coerce')
@@ -167,32 +171,35 @@ if standard_files and uut_file:
         df_uut = df_uut.drop(columns=cols_uut_drop)
 
     # --- Header Mapping ---
-    st.subheader("🔀 Mapping Header untuk Perbandingan")
+    st.subheader("🔀 Mapping Header untuk Perbandingan")   
     exclude_options_std = status_cols + [ts_col_std]
     option_std = list(filter(lambda x: x not in exclude_options_std, std_headers))
     option_uut = list(filter(lambda x: x != ts_col_uut, uut_headers))
 
     header_mapping = {}
-    st.divider()
-    tt_std = st.selectbox(f"Header Suhu Standar", ["-"] + option_std, key="tt_std")
-    tt_uut = st.selectbox(f"Header Suhu UUT",["-"] + option_uut, key="tt_uut")
+    
+    col_t,col_rh= st.columns(2)
+    col_t.subheader("🌡Suhu Udara")
+    tt_std = col_t.selectbox(f"Header Suhu Standar", ["-"] + option_std, key="tt_std")
+    tt_uut = col_t.selectbox(f"Header Suhu UUT",["-"] + option_uut, key="tt_uut")
     if tt_std != "-" and tt_uut != "-":
         header_mapping[tt_std] = tt_uut
         df_standard[f"koreksi-{tt_std}"] = df_standard[tt_std].apply(lambda x: cari_koreksi_scipy(id_std, "TT", x))
         df_standard[f"{tt_std}-terkoreksi"] = df_standard[tt_std] + df_standard[f"koreksi-{tt_std}"]
 
-    st.divider()
-    rh_std = st.selectbox(f"Header Kelembapan Standar",["-"] + option_std, key="rh_std")
-    rh_uut = st.selectbox(f"Header Kelembapan UUT",["-"] + option_uut, key="rh_uut")
+    col_rh.subheader("💦 Kelembapan")
+    rh_std = col_rh.selectbox(f"Header Kelembapan Standar",["-"] + option_std, key="rh_std")
+    rh_uut = col_rh.selectbox(f"Header Kelembapan UUT",["-"] + option_uut, key="rh_uut")
     if rh_std != "-" and rh_uut != "-":
         header_mapping[rh_std] = rh_uut
         df_standard[f"koreksi-{rh_std}"] = df_standard[rh_std].apply(lambda x: cari_koreksi_scipy(id_std, "RH", x))
         df_standard[f"{rh_std}-terkoreksi"] = df_standard[rh_std] + df_standard[f"koreksi-{rh_std}"]
 
-    st.divider()
-    pp_std = st.selectbox(f"Header Tekanan Standar",["-"] + option_std, key="pp_std")
-    pp_uut = st.selectbox(f"Header Tekanan UUT",["-"] + option_uut, key="pp_uut")
-    konversi_pp = st.checkbox("Konversi satuan UUT InHg ke hPa", value=False)
+    col_p,col_ws = st.columns(2)
+    col_p.subheader("🎈 Tekanan")
+    pp_std = col_p.selectbox(f"Header Tekanan Standar",["-"] + option_std, key="pp_std")
+    pp_uut = col_p.selectbox(f"Header Tekanan UUT",["-"] + option_uut, key="pp_uut")
+    konversi_pp = col_p.checkbox("Konversi satuan UUT InHg ke hPa", value=False)
     if pp_std != "-" and pp_uut != "-":
         header_mapping[pp_std] = pp_uut
         df_standard[f"koreksi-{pp_std}"] = df_standard[pp_std].apply(lambda x: cari_koreksi_scipy(id_std, "PP", x))
@@ -200,10 +207,10 @@ if standard_files and uut_file:
         if konversi_pp:
             df_uut[pp_uut] = df_uut[pp_uut].apply(lambda x: convert_unit(x, "InHg", "hPa"))
     
-    st.divider()
-    ws_std = st.selectbox(f"Header Kec. Angin Standar",["-"] + option_std, key="ws_std")
-    ws_uut = st.selectbox(f"Header Kec. Angin UUT",["-"] + option_uut, key="ws_uut")
-    konversi_ws = st.checkbox("Konversi satuan UUT knot ke m/s", value=False)
+    col_ws.subheader("🍃 Kecepatan Angin")
+    ws_std = col_ws.selectbox(f"Header Kec. Angin Standar",["-"] + option_std, key="ws_std")
+    ws_uut = col_ws.selectbox(f"Header Kec. Angin UUT",["-"] + option_uut, key="ws_uut")
+    konversi_ws = col_ws.checkbox("Konversi satuan UUT knot ke m/s", value=False)
     if ws_std != "-" and ws_uut != "-":
         header_mapping[ws_std] = ws_uut
         df_standard[f"koreksi-{ws_std}"] = df_standard[ws_std].apply(lambda x: cari_koreksi_scipy(id_std, "WS", x))
@@ -211,28 +218,39 @@ if standard_files and uut_file:
         if konversi_ws:
             df_uut[ws_uut] = df_uut[ws_uut].apply(lambda x: convert_unit(x, "knot", "m/s"))
     
-    st.divider()
-    wd_std = st.selectbox(f"Header Arah Angin Standar",["-"] + option_std, key="wd_std")
-    wd_uut = st.selectbox(f"Header Arah Angin UUT",["-"] + option_uut, key="wd_uut")
+    col_wd,col_sr = st.columns(2)
+    col_wd.subheader("🌬 Arah Angin")
+    wd_std = col_wd.selectbox(f"Header Arah Angin Standar",["-"] + option_std, key="wd_std")
+    wd_uut = col_wd.selectbox(f"Header Arah Angin UUT",["-"] + option_uut, key="wd_uut")
     if wd_std != "-" and wd_uut != "-":
         header_mapping[wd_std] = wd_uut
         df_standard[f"koreksi-{wd_std}"] = df_standard[wd_std].apply(lambda x: cari_koreksi_scipy(id_std, "WD", x))
         df_standard[f"{wd_std}-terkoreksi"] = df_standard[wd_std] + df_standard[f"koreksi-{wd_std}"]
     
-    st.divider()
-    sr_std = st.selectbox(f"Header Radiasi Matahari Standar",["-"] + option_std, key="sr_std")
-    sr_uut = st.selectbox(f"Header Radiasi Matahari UUT",["-"] + option_uut, key="sr_uut")
+    col_sr.subheader("☀️ Radiasi Matahari")
+    sr_std = col_sr.selectbox(f"Header Radiasi Matahari Standar",["-"] + option_std, key="sr_std")
+    sr_uut = col_sr.selectbox(f"Header Radiasi Matahari UUT",["-"] + option_uut, key="sr_uut")
     if sr_std != "-" and sr_uut != "-":
         header_mapping[sr_std] = sr_uut
         df_standard[f"{sr_std}-terkoreksi"] = df_standard[sr_std]
 
-    st.divider()
-    tw_std = st.selectbox(f"Header Suhu Air Standar",["-"] + option_std, key="tw_std")
-    tw_uut = st.selectbox(f"Header Suhu Air UUT",["-"] + option_uut, key="tw_uut")
+    col_wt,col_wpanci = st.columns(2)
+    col_wt.subheader("🌊 Suhu Air")
+    tw_std = col_wt.selectbox(f"Header Suhu Air Standar",["-"] + option_std, key="tw_std")
+    tw_uut = col_wt.selectbox(f"Header Suhu Air UUT",["-"] + option_uut, key="tw_uut")
     if tw_std != "-" and tw_uut != "-":
         header_mapping[tw_std] = tw_uut
         df_standard[f"koreksi-{tw_std}"] = df_standard[tw_std].apply(lambda x: cari_koreksi_scipy(id_std, "WT", x))
         df_standard[f"{tw_std}-terkoreksi"] = df_standard[tw_std] + df_standard[f"koreksi-{tw_std}"]
+    
+    col_wpanci.subheader("🍃 Kec. Angin Panci")
+    wpanci_std = col_wpanci.selectbox(f"Header Suhu Air Standar",["-"] + option_std, key="wpanci_std")
+    wpanci_uut = col_wpanci.selectbox(f"Header Suhu Air UUT",["-"] + option_uut, key="wpanci_uut")
+    if wpanci_std != "-" and wpanci_uut != "-":
+        header_mapping[wpanci_std] = wpanci_uut
+        df_standard[f"koreksi-{wpanci_std}"] = df_standard[wpanci_std].apply(lambda x: cari_koreksi_scipy(id_std, "WS", x))
+        df_standard[f"{wpanci_std}-terkoreksi"] = df_standard[wpanci_std] + df_standard[f"koreksi-{wpanci_std}"]
+
 
     # --- Sinkronisasi Timestamp dan Gabung ---
     df_standard_sorted = df_standard.sort_values(ts_col_std)
@@ -251,11 +269,9 @@ if standard_files and uut_file:
     cols_to_check = list(header_mapping.keys()) + list(header_mapping.values())
     df_merged = df_merged.dropna(subset=cols_to_check).reset_index(drop=True)
 
-    st.subheader("📊 Visualisasi dan Koreksi")
-
-
     time_list = df_merged[ts_col_std]
     if len(time_list) != 0 :
+        st.subheader("🕒 Rentang Data")
         st.write("Pilih rentang waktu")
         available_times = df_merged[ts_col_std].dt.strftime('%H:%M').unique().tolist()
         #st.write(available_times)
@@ -272,8 +288,12 @@ if standard_files and uut_file:
         st.write(f'ℹ️ Data dipilih mulai {start_datetime} sampai {end_datetime}')
         #st.dataframe(df_merged_filtered)
     
-    
+    st.subheader("📊 Hasil Kalibrasi Sementara per Parameter")
     if len(header_mapping) != 0:
+        # if "lhks_df" not in st.session_state:
+        #     st.session_state.lhks_df = []
+        lhks_df = pd.DataFrame()
+        count = 0
         tabs = st.tabs(header_mapping.keys())
         for tab, param_col in zip(tabs,header_mapping.items()):
             std_col = param_col[0]
@@ -288,8 +308,8 @@ if standard_files and uut_file:
                         df_merged_filtered[f"koreksi_{uut_col}"] = df_merged_filtered[f"{std_col}-terkoreksi"] - df_merged_filtered[uut_col]
                     
                     col1, col2, col3 = tab.columns(3)
-                    col1.metric(f"Mean Standar", f"{df_merged_filtered[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged_filtered[f"{std_col}-terkoreksi"].std():.2g}", border=True)
-                    col2.metric(f"Mean UUT", f"{df_merged_filtered[uut_col].mean():.2f}", f"{df_merged_filtered[uut_col].std():.2g}", border=True)
+                    col1.metric(f"Rata-rata Standar", f"{df_merged_filtered[f"{std_col}-terkoreksi"].mean():.2f}",f"{df_merged_filtered[f"{std_col}-terkoreksi"].std():.2g}", border=True)
+                    col2.metric(f"Rata-rata UUT", f"{df_merged_filtered[uut_col].mean():.2f}", f"{df_merged_filtered[uut_col].std():.2g}", border=True)
                     col3.metric(f"Koreksi", f"{df_merged_filtered[f"koreksi_{uut_col}"].mean():.2g}",f"{df_merged_filtered[f"koreksi_{uut_col}"].std():.2g}",border=True)
 
                     tab.line_chart(
@@ -303,7 +323,6 @@ if standard_files and uut_file:
                     sns.lineplot(x=df_merged_filtered[ts_col_std], y=df_merged_filtered[f"{std_col}-terkoreksi"], label=f"Standar", ax=ax, linewidth=2.5)
                     sns.lineplot(x=df_merged_filtered[ts_col_std], y=df_merged_filtered[uut_col], label=f"UUT", ax=ax, linewidth=2.5)
 
-                    #ax.set_ylim(0, df_merged_filtered[f"{std_col}-terkoreksi"].max() + 10)
                     ax.set_title(f"Tren {std_col} dan {uut_col}")
                     ax.legend()
                     ax.grid(True)
@@ -312,10 +331,10 @@ if standard_files and uut_file:
                  
                     # Konversi DataFrame ke CSV string
                     if std_col.lower().startswith("sr"):
-                        df_summary = df_merged_filtered[[ts_col_std, f"{std_col}", uut_col, f"koreksi_{uut_col}"].copy()]
+                        df_summary = df_merged_filtered[[ts_col_std, f"{std_col}", uut_col, f"koreksi_{uut_col}"]].copy()
                     else:
-                        df_summary = df_merged_filtered[[ts_col_std, f"{std_col}",f"koreksi-{std_col}",f"{std_col}-terkoreksi", uut_col, f"koreksi_{uut_col}"].copy()]
-                    
+                        df_summary = df_merged_filtered[[ts_col_std, f"{std_col}",f"koreksi-{std_col}",f"{std_col}-terkoreksi", uut_col, f"koreksi_{uut_col}"]].copy()
+
                     buf = io.BytesIO()
                     fig.savefig(buf, format="png")
                     buf.seek(0)
@@ -324,15 +343,40 @@ if standard_files and uut_file:
                     with pd.ExcelWriter(csv_buffer, engine='openpyxl') as writer:
                         df_summary.to_excel(writer, index=False, sheet_name='Data')
                         csv_buffer.seek(0)
+                
                     # Tombol download
                     col_btn1,col_btn2,spacer = tab.columns([1, 1, 3])
                     with col_btn1:
                         col_btn1.download_button(label="📈 Unduh Grafik",data=buf,file_name=f"grafik_tren_{uut_col}.png",mime="image/png", key=std_col)
                     with col_btn2:
                         col_btn2.download_button(label="📄 Unduh Tabel", data=csv_buffer, file_name=f"data-komparasi-{uut_col}.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        )
-                    tab.write(df_summary)
-            
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+                    with tab.expander("Lihat tabel komparasi"):
+                        st.dataframe(df_summary)
+
+                    #Himpuun df_summary
+                    if count > 0:
+                        cut_time = df_summary.drop(columns='Timestamp')
+                        lhks_df= pd.concat([lhks_df,cut_time],axis=1) 
+                    else:
+                        lhks_df= pd.concat([lhks_df,df_summary],axis=1) 
+                    count += 1     
+        
+        #Membuat Dataframe Gabungan
+        st.subheader("📊 Hasil Kalibrasi Sementara Gabungan")
+        now_stamp = datetime.now().strftime('%d%m%Y-%H%M%S')
+        summary_buffer = io.BytesIO()
+        with pd.ExcelWriter(summary_buffer, engine='openpyxl') as writer:
+                lhks_df.to_excel(writer, index=False, sheet_name='Data Gabungan')
+                summary_buffer.getvalue()
+
+        with st.expander("Klik untuk mengunduh data gabungan"):
+            filename = st.text_input("Mau dinamain apa filenya?")
+            if filename != '':
+                st.download_button(label="📄 Unduh File", data=summary_buffer, file_name=f"{now_stamp}-{filename}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+           
+        st.dataframe(lhks_df)        
 else:
     st.info("📁 Silakan upload kedua file CSV terlebih dahulu.")
