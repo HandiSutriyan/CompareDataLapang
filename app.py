@@ -25,7 +25,8 @@ def convert_columns_to_float(df, exclude_cols):
                 df[col] = pd.to_numeric(df[col], errors='coerce') #konversi desimal yang pakai titik
     return df
 
-def clean_std_df(std_df):
+def clean_std_df(input_df):
+    std_df = input_df.copy()
     std_df.columns = std_df.columns.str.strip()
     new_header = []
     for i, col in enumerate(std_df.columns):
@@ -41,11 +42,32 @@ def clean_std_df(std_df):
     std_df = std_df.dropna(axis=1,how='all') #hapus kolom lebih
     std_df = std_df.drop([0]).reset_index(drop=True) #hapus baris lebih
 
-    status_cols = [col for col in std_df.columns if col.lower().startswith("stat")]
-    exclude_cols_std = [std_df.columns[0]] + status_cols
+    std_df_cols = std_df.columns
+    status_std_cols = [col for col in std_df_cols if col.lower().startswith("stat")]
+
+    #Hapus kolom dari sensor yang tidak terpakai (kolom invalid)
+    invalid_stat_columns = [col for col in status_std_cols if (std_df[col] == "INVALID").all()]
+
+    sensor_columns_to_drop = [
+        col.replace('Stat_', '') for col in invalid_stat_columns 
+        if col.replace('Stat_', '') in std_df_cols
+    ]
+
+    drop_cols = invalid_stat_columns + sensor_columns_to_drop
+    std_df = std_df.drop(columns=drop_cols)
+
+    #Hapus baris data yang invalid
+    status_std_cols = [col for col in status_std_cols if col not in invalid_stat_columns]
+    if status_std_cols:
+        invalid_mask = std_df[status_std_cols].apply(lambda row: row.str.upper().str.contains("INVALID"), axis=1).any(axis=1)
+        std_df = std_df[~invalid_mask]
+    
+    #Konversi data numerik ke float
+    exclude_cols_std = [std_df.columns[0]] + status_std_cols
     std_df = convert_columns_to_float(std_df, exclude_cols_std)
 
     return std_df
+
 # Fungsi konversi satuan
 def convert_unit(value, from_unit, to_unit):
     if from_unit == to_unit or "-" in (from_unit, to_unit):
@@ -106,9 +128,17 @@ if st.sidebar.button("❌ Shutdown Aplikasi"):
 
 if standard_files and uut_file:
     df_standard_list = [pd.read_csv(f, sep=None, engine='python') for f in standard_files]
-    df_standard = pd.concat(df_standard_list, ignore_index=True)
-    df_standard = clean_std_df(df_standard)
+    df_standard = pd.DataFrame()
+    
+    #Cleaning data setiap file
+    for df in df_standard_list:
+        clean_df = clean_std_df(df)
+        df_standard = pd.concat([df_standard,clean_df], ignore_index=True)
 
+    std_df_cols = df_standard.columns
+    status_std_cols = [col for col in std_df_cols if col.lower().startswith("stat")]
+
+    #Logger UUT
     if id_logger == "CS":
         df_uut = pd.read_csv(uut_file,sep=None, engine='python', skiprows=1, header=0)
         df_uut = df_uut.drop([0,1])
@@ -132,14 +162,15 @@ if standard_files and uut_file:
 
     # --- Konversi Timestamp ---
     st.subheader("🕒 Sinkronisasi Waktu")
-    col_t_std,col_f_std = st.columns(2)
-    col_t_uut,col_f_uut = st.columns(2)
+    with st.expander("Ubahsuai sinkronisasi format waktu"):
+        col_t_std,col_f_std = st.columns(2)
+        col_t_uut,col_f_uut = st.columns(2)
 
-    ts_col_std = col_t_std.selectbox("Pilih kolom timestamp alat standar", std_headers)
-    ts_col_uut = col_t_uut.selectbox("Pilih kolom timestamp UUT", uut_headers)
+        ts_col_std = col_t_std.selectbox("Pilih kolom timestamp alat standar", std_headers)
+        ts_col_uut = col_t_uut.selectbox("Pilih kolom timestamp UUT", uut_headers)
 
-    time_format_std = col_f_std.text_input("Format waktu alat standar", value="%m/%d/%y %I:%M:%S %p")
-    time_format_uut = col_f_uut.text_input("Format waktu UUT", value="%d/%m/%Y %H:%M:%S")  # <<== perbaikan format
+        time_format_std = col_f_std.text_input("Format waktu alat standar", value="%m/%d/%y %I:%M:%S %p")
+        time_format_uut = col_f_uut.text_input("Format waktu UUT", value="%d/%m/%Y %H:%M:%S")  # <<== perbaikan format
 
     try:
         df_standard[ts_col_std] = pd.to_datetime(df_standard[ts_col_std], format=time_format_std, errors='coerce')
@@ -153,28 +184,28 @@ if standard_files and uut_file:
     except Exception as e:
         st.error(f"❌ Gagal mengonversi waktu: {e}")
 
-    # --- Pembersihan Header ---
-    st.subheader("🧹 Pembersihan Kolom Data")
-    cols_to_drop = st.multiselect("Pilih kolom Standar yang tidak akan digunakan", df_standard.columns)
-    if cols_to_drop:
-        df_standard = df_standard.drop(columns=cols_to_drop)
-
-    # Hapus baris INVALID
-    status_cols = [col for col in df_standard.columns if col.lower().startswith("stat")]
-    remove_invalid = st.checkbox("Hapus baris dengan status INVALID di kolom status", value=True)
-    if remove_invalid and status_cols:
-        invalid_mask = df_standard[status_cols].apply(lambda row: row.str.upper().str.contains("INVALID"), axis=1).any(axis=1)
-        df_standard = df_standard[~invalid_mask]
-    
-    cols_uut_drop = st.multiselect("Pilih kolom UUT yang tidak akan digunakan", df_uut.columns)
-    if cols_uut_drop:
-        df_uut = df_uut.drop(columns=cols_uut_drop)
-
-    # --- Header Mapping ---
-    st.subheader("🔀 Mapping Header untuk Perbandingan")   
+    #Pemetaan header
+    status_cols = [col for col in df_standard.columns if col.lower().startswith("stat")]   
     exclude_options_std = status_cols + [ts_col_std]
     option_std = list(filter(lambda x: x not in exclude_options_std, std_headers))
     option_uut = list(filter(lambda x: x != ts_col_uut, uut_headers))
+
+
+    # --- Pembersihan Header ---
+    st.subheader("🧹 Pembersihan Kolom Data")
+    with st.expander("Klik jika ingin menghapus kolom yang tidak diperlukan"):
+        cols_to_drop = st.multiselect("Pilih kolom Standar yang tidak akan digunakan", option_std)
+        if cols_to_drop:
+            df_standard = df_standard.drop(columns=cols_to_drop)
+            option_std = [col for col in option_std if col not in cols_to_drop]
+        
+        cols_uut_drop = st.multiselect("Pilih kolom UUT yang tidak akan digunakan", option_uut)
+        if cols_uut_drop:
+            df_uut = df_uut.drop(columns=cols_uut_drop)
+            option_uut = [col for col in option_uut if col not in cols_uut_drop]
+
+    # --- Header Mapping ---
+    st.subheader("🔀 Mapping Header untuk Perbandingan")
 
     header_mapping = {}
     
@@ -255,7 +286,6 @@ if standard_files and uut_file:
     # --- Sinkronisasi Timestamp dan Gabung ---
     df_standard_sorted = df_standard.sort_values(ts_col_std)
     df_uut_sorted = df_uut.sort_values(ts_col_uut)
-
     df_merged = pd.merge_asof(
         df_standard_sorted,
         df_uut_sorted,
@@ -287,14 +317,14 @@ if standard_files and uut_file:
         df_merged_filtered = df_merged[(df_merged[ts_col_std] >= start_datetime)&((df_merged[ts_col_std] <= end_datetime))].reset_index(drop=True)
         st.write(f'ℹ️ Data dipilih mulai {start_datetime} sampai {end_datetime}')
         #st.dataframe(df_merged_filtered)
-    
+
     st.subheader("📊 Hasil Kalibrasi Sementara per Parameter")
     if len(header_mapping) != 0:
         # if "lhks_df" not in st.session_state:
         #     st.session_state.lhks_df = []
         lhks_df = pd.DataFrame()
-        count = 0
         tabs = st.tabs(header_mapping.keys())
+        count = 0
         for tab, param_col in zip(tabs,header_mapping.items()):
             std_col = param_col[0]
             uut_col = param_col[1]
@@ -347,10 +377,10 @@ if standard_files and uut_file:
                     # Tombol download
                     col_btn1,col_btn2,spacer = tab.columns([1, 1, 3])
                     with col_btn1:
-                        col_btn1.download_button(label="📈 Unduh Grafik",data=buf,file_name=f"grafik_tren_{uut_col}.png",mime="image/png", key=std_col)
+                        col_btn1.download_button(label="📈 Unduh Grafik",data=buf,file_name=f"grafik_tren_{uut_col}.png",mime="image/png", key=f'excel-{std_col}')
                     with col_btn2:
                         col_btn2.download_button(label="📄 Unduh Tabel", data=csv_buffer, file_name=f"data-komparasi-{uut_col}.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key=f'data-{std_col}')
 
                     with tab.expander("Lihat tabel komparasi"):
                         st.dataframe(df_summary)
@@ -360,8 +390,10 @@ if standard_files and uut_file:
                         cut_time = df_summary.drop(columns='Timestamp')
                         lhks_df= pd.concat([lhks_df,cut_time],axis=1) 
                     else:
+                        df_summary = df_summary.add_suffix(f'_{count}')
                         lhks_df= pd.concat([lhks_df,df_summary],axis=1) 
-                    count += 1     
+                    count += 1    
+                    st.write(count) 
         
         #Membuat Dataframe Gabungan
         st.subheader("📊 Hasil Kalibrasi Sementara Gabungan")
