@@ -393,7 +393,7 @@ if standard_files and uut_file:
                         df_summary = df_summary.add_suffix(f'_{count}')
                         lhks_df= pd.concat([lhks_df,df_summary],axis=1) 
                     count += 1    
-                    st.write(count) 
+                    # st.write(count) 
         
         #Membuat Dataframe Gabungan
         st.subheader("📊 Hasil Kalibrasi Sementara Gabungan")

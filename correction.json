@@ -1,47 +1,49 @@
 {
     "AWS-1":{
         "TT":[
-            {"setpoin":0.29,"koreksi":-0.21},
-            {"setpoin":10.27,"koreksi":-0.04},
-            {"setpoin":20.24,"koreksi":0.05},
-            {"setpoin":30.21,"koreksi":0.13},
-            {"setpoin":40.22,"koreksi":0.13}
+            {"setpoin":0,"koreksi":-0.01},
+            {"setpoin":10,"koreksi":0.04},
+            {"setpoin":20,"koreksi":0.05},
+            {"setpoin":30,"koreksi":0.09},
+            {"setpoin":40,"koreksi":0.10}
         ],
         "RH":[
-            {"setpoin":21.80,"koreksi":-2.4},
-            {"setpoin":31.73,"koreksi":-2.2},
-            {"setpoin":41.47,"koreksi":-1.8},
-            {"setpoin":51.36,"koreksi":-1.5},
-            {"setpoin":60.89,"koreksi":-0.8},
-            {"setpoin":70.25,"koreksi":0.1},
-            {"setpoin":79.87,"koreksi":0.9},
-            {"setpoin":92.94,"koreksi":2}
+            {"setpoin":15,"koreksi":-1.17},
+            {"setpoin":20,"koreksi":-1.21},
+            {"setpoin":30,"koreksi":-1.27},
+            {"setpoin":40,"koreksi":-1.23},
+            {"setpoin":50,"koreksi":-1.08},
+            {"setpoin":60,"koreksi":-0.85},
+            {"setpoin":70,"koreksi":-0.25},
+            {"setpoin":80,"koreksi":0.34},
+            {"setpoin":90,"koreksi":1.23},
+            {"setpoin":95,"koreksi":1.63}
         ],
         "PP":[
-            {"setpoin":700.47,"koreksi":-0.116},
-            {"setpoin":750.43,"koreksi":-0.085},
-            {"setpoin":800.41,"koreksi":-0.070},
-            {"setpoin":850.39,"koreksi":-0.059},
-            {"setpoin":900.36,"koreksi":-0.033},
-            {"setpoin":950.33,"koreksi":-0.005},
-            {"setpoin":1000.29,"koreksi":0.028},
-            {"setpoin":1052.77,"koreksi":0.041},
-            {"setpoin":1099.73,"koreksi":0.051}
+            {"setpoin":700,"koreksi":-0.163},
+            {"setpoin":750,"koreksi":-0.161},
+            {"setpoin":800,"koreksi":-0.163},
+            {"setpoin":850,"koreksi":-0.152},
+            {"setpoin":900,"koreksi":-0.143},
+            {"setpoin":950,"koreksi":-0.142},
+            {"setpoin":1000,"koreksi":-0.147},
+            {"setpoin":1050,"koreksi":-0.130},
+            {"setpoin":1100,"koreksi":-0.129}
         ],
         "WS":[
-            {"setpoin":0.6,"koreksi":0.37},
-            {"setpoin":1.6,"koreksi":0.33},
-            {"setpoin":5.2,"koreksi":0.39},
-            {"setpoin":7.1,"koreksi":0.32},
-            {"setpoin":10.6,"koreksi":0.44},
-            {"setpoin":14.7,"koreksi":0.32},
-            {"setpoin":20.1,"koreksi":0.30}
+            {"setpoin":0.6,"koreksi":0.43},
+            {"setpoin":1.6,"koreksi":0.38},
+            {"setpoin":5.3,"koreksi":0.30},
+            {"setpoin":7.2,"koreksi":0.23},
+            {"setpoin":10.8,"koreksi":0.073},
+            {"setpoin":14.9,"koreksi":0.070},
+            {"setpoin":20.5,"koreksi":0.016}
         ],
         "WD":[
             {"setpoin":0,"koreksi":0},
-            {"setpoin":92,"koreksi":-2.30},
-            {"setpoin":182,"koreksi":-2},
-            {"setpoin":271,"koreksi":-1.30},
+            {"setpoin":89.43,"koreksi":0.37},
+            {"setpoin":178.79,"koreksi":1.01},
+            {"setpoin":270.16,"koreksi":-0.26},
             {"setpoin":360,"koreksi":0}
         ],
         "WT":[
@@ -54,160 +56,152 @@
     },
     "AWS-2":{
         "TT":[
-            {"setpoin":0.17,"koreksi":-0.08},
-            {"setpoin":10.24,"koreksi":-0.02},
-            {"setpoin":20.26,"koreksi":0.03},
-            {"setpoin":30.27,"koreksi":0.07},
-            {"setpoin":40.27,"koreksi":0.08}
+            {"setpoin":0,"koreksi":-0.02},
+            {"setpoin":10,"koreksi":0.06},
+            {"setpoin":20,"koreksi":0.11},
+            {"setpoin":30,"koreksi":0.10},
+            {"setpoin":40,"koreksi":0.13}
         ],
         "RH":[
-            {"setpoin":22.22,"koreksi":-2.7},
-            {"setpoin":32.0,"koreksi":-2.5},
-            {"setpoin":41.82,"koreksi":-2.2},
-            {"setpoin":51.69,"koreksi":-1.8},
-            {"setpoin":61.26,"koreksi":-1.2},
-            {"setpoin":70.55,"koreksi":-0.2},
-            {"setpoin":80.13,"koreksi":0.5},
-            {"setpoin":92.97,"koreksi":2}
+            {"setpoin":15,"koreksi":-0.84},
+            {"setpoin":20,"koreksi":-0.73},
+            {"setpoin":30,"koreksi":-0.55},
+            {"setpoin":40,"koreksi":-0.35},
+            {"setpoin":50,"koreksi":-0.02},
+            {"setpoin":60,"koreksi":0.41},
+            {"setpoin":70,"koreksi":0.98},
+            {"setpoin":80,"koreksi":1.69},
+            {"setpoin":90,"koreksi":2.25},
+            {"setpoin":95,"koreksi":2.82}
         ],
         "PP":[
-            {"setpoin":700.12,"koreksi":-0.110},
-            {"setpoin":750.11,"koreksi":-0.096},
-            {"setpoin":800.09,"koreksi":-0.084},
-            {"setpoin":850.04,"koreksi":-0.046},
-            {"setpoin":900.04,"koreksi":-0.042},
-            {"setpoin":950.01,"koreksi":-0.026},
-            {"setpoin":999.98,"koreksi":0.002},
-            {"setpoin":1049.96,"koreksi":0.021},
-            {"setpoin":1099.76,"koreksi":0.041}
+            {"setpoin":700,"koreksi":-0.158},
+            {"setpoin":750,"koreksi":-0.123},
+            {"setpoin":800,"koreksi":-0.110},
+            {"setpoin":850,"koreksi":-0.085},
+            {"setpoin":900,"koreksi":-0.066},
+            {"setpoin":950,"koreksi":-0.034},
+            {"setpoin":1000,"koreksi":-0.029},
+            {"setpoin":1050,"koreksi":0.017},
+            {"setpoin":1100,"koreksi":0.013}
         ],
         "WS":[
-            {"setpoin":0.5,"koreksi":0.44},
-            {"setpoin":1.6,"koreksi":0.39},
-            {"setpoin":5.1,"koreksi":0.42},
-            {"setpoin":7.0,"koreksi":0.40},
-            {"setpoin":10.6,"koreksi":0.46},
-            {"setpoin":14.7,"koreksi":0.36},
-            {"setpoin":20.1,"koreksi":0.23}
+            {"setpoin":0.6,"koreksi":0.41},
+            {"setpoin":1.6,"koreksi":0.44},
+            {"setpoin":5.2,"koreksi":0.34},
+            {"setpoin":7.2,"koreksi":0.29},
+            {"setpoin":10.9,"koreksi":0.026},
+            {"setpoin":14.9,"koreksi":0.0063},
+            {"setpoin":20.7,"koreksi":0.0060}
         ],
         "WD":[
-            {"setpoin":0,"koreksi":-1},
-            {"setpoin":89,"koreksi":0.7},
-            {"setpoin":179,"koreksi":1},
-            {"setpoin":271,"koreksi":-1.30},
-            {"setpoin":360,"koreksi":-1}
+            {"setpoin":0,"koreksi":0},
+            {"setpoin":90,"koreksi":-0.2},
+            {"setpoin":180,"koreksi":-0.2},
+            {"setpoin":270,"koreksi":-1.1},
+            {"setpoin":360,"koreksi":0}
         ],
         "WT":[
-            {"setpoin":0.27,"koreksi":-0.005},
-            {"setpoin":10.22,"koreksi":-0.032},
-            {"setpoin":20.29,"koreksi":-0.044},
-            {"setpoin":30.16,"koreksi":-0.060},
-            {"setpoin":40.11,"koreksi":-0.068}
+            {"setpoin":0,"koreksi":0.09},
+            {"setpoin":10,"koreksi":0.07},
+            {"setpoin":20,"koreksi":0.07},
+            {"setpoin":30,"koreksi":0.06},
+            {"setpoin":40,"koreksi":0.06}
         ]
     },
     "AWS-3":{
         "TT":[
-            {"setpoin":0.21,"koreksi":-0.12},
-            {"setpoin":10.21,"koreksi":0.01},
-            {"setpoin":20.17,"koreksi":0.12},
-            {"setpoin":30.13,"koreksi":0.20},
-            {"setpoin":40.15,"koreksi":0.20}
+            {"setpoin":0,"koreksi":-0.01},
+            {"setpoin":10,"koreksi":0.04},
+            {"setpoin":20,"koreksi":0.05},
+            {"setpoin":30,"koreksi":0.09},
+            {"setpoin":40,"koreksi":0.10}
         ],
         "RH":[
-            {"setpoin":20.29,"koreksi":-0.8},
-            {"setpoin":30.33,"koreksi":-0.8},
-            {"setpoin":40.19,"koreksi":-0.6},
-            {"setpoin":50.21,"koreksi":-0.4},
-            {"setpoin":60.19,"koreksi":-0.1},
-            {"setpoin":69.97,"koreksi":0.4},
-            {"setpoin":79.85,"koreksi":0.9},
-            {"setpoin":93.35,"koreksi":1.6}
+            {"setpoin":15,"koreksi":-1.17},
+            {"setpoin":20,"koreksi":-1.21},
+            {"setpoin":30,"koreksi":-1.27},
+            {"setpoin":40,"koreksi":-1.23},
+            {"setpoin":50,"koreksi":-1.08},
+            {"setpoin":60,"koreksi":-0.85},
+            {"setpoin":70,"koreksi":-0.25},
+            {"setpoin":80,"koreksi":0.34},
+            {"setpoin":90,"koreksi":1.23},
+            {"setpoin":95,"koreksi":1.63}
         ],
         "PP":[
-            {"setpoin":700.15,"koreksi":-0.138},
-            {"setpoin":750.15,"koreksi":-0.133},
-            {"setpoin":800.13,"koreksi":-0.124},
-            {"setpoin":850.12,"koreksi":-0.123},
-            {"setpoin":900.11,"koreksi":-0.112},
-            {"setpoin":950.11,"koreksi":-0.121},
-            {"setpoin":1000.11,"koreksi":-0.126},
-            {"setpoin":1050.09,"koreksi":-0.112},
-            {"setpoin":1099.90,"koreksi":-0.107}
+            {"setpoin":700,"koreksi":-0.163},
+            {"setpoin":750,"koreksi":-0.161},
+            {"setpoin":800,"koreksi":-0.163},
+            {"setpoin":850,"koreksi":-0.152},
+            {"setpoin":900,"koreksi":-0.143},
+            {"setpoin":950,"koreksi":-0.142},
+            {"setpoin":1000,"koreksi":-0.147},
+            {"setpoin":1050,"koreksi":-0.130},
+            {"setpoin":1100,"koreksi":-0.129}
         ],
         "WS":[
-            {"setpoin":0.6,"koreksi":0.34},
+            {"setpoin":0.6,"koreksi":0.43},
             {"setpoin":1.6,"koreksi":0.38},
-            {"setpoin":5.2,"koreksi":0.40},
-            {"setpoin":7.1,"koreksi":0.42},
-            {"setpoin":10.6,"koreksi":0.44},
-            {"setpoin":14.6,"koreksi":0.34},
-            {"setpoin":20.2,"koreksi":0.25}
+            {"setpoin":5.3,"koreksi":0.30},
+            {"setpoin":7.2,"koreksi":0.23},
+            {"setpoin":10.8,"koreksi":0.073},
+            {"setpoin":14.9,"koreksi":0.070},
+            {"setpoin":20.5,"koreksi":0.016}
         ],
         "WD":[
             {"setpoin":0,"koreksi":0},
-            {"setpoin":89,"koreksi":0.70},
-            {"setpoin":179,"koreksi":1},
-            {"setpoin":269,"koreksi":0.70},
+            {"setpoin":89.43,"koreksi":0.37},
+            {"setpoin":178.79,"koreksi":1.01},
+            {"setpoin":270.16,"koreksi":-0.26},
             {"setpoin":360,"koreksi":0}
-        ],
-        "WT":[
-            {"setpoin":0.27,"koreksi":-0.005},
-            {"setpoin":10.22,"koreksi":-0.032},
-            {"setpoin":20.29,"koreksi":-0.044},
-            {"setpoin":30.16,"koreksi":-0.060},
-            {"setpoin":40.11,"koreksi":-0.068}
         ]
     },
     "AWS-6":{
-        "WT":[
-            {"setpoin":0.26,"koreksi":0.005},
-            {"setpoin":10.19,"koreksi":-0.004},
-            {"setpoin":20.26,"koreksi":-0.014},
-            {"setpoin":30.12,"koreksi":-0.022},
-            {"setpoin":40.08,"koreksi":-0.030}
-        ],
         "TT":[
-            {"setpoin":0.18,"koreksi":-0.09},
-            {"setpoin":10.24,"koreksi":-0.02},
-            {"setpoin":20.25,"koreksi":0.04},
-            {"setpoin":30.26,"koreksi":0.08},
-            {"setpoin":40.26,"koreksi":0.09}
+            {"setpoin":0,"koreksi":-0.06},
+            {"setpoin":10,"koreksi":0.01},
+            {"setpoin":20,"koreksi":0.02},
+            {"setpoin":30,"koreksi":0.07},
+            {"setpoin":40,"koreksi":0.08}
         ],
         "RH":[
-            {"setpoin":20.75,"koreksi":-1.3},
-            {"setpoin":30.62,"koreksi":-1.2},
-            {"setpoin":40.68,"koreksi":-1.0},
-            {"setpoin":50.73,"koreksi":-0.9},
-            {"setpoin":60.71,"koreksi":-0.6},
-            {"setpoin":70.43,"koreksi":-0.1},
-            {"setpoin":80.27,"koreksi":0.4},
-            {"setpoin":93.61,"koreksi":1.3}
+             {"setpoin":15,"koreksi":-0.61},
+            {"setpoin":20,"koreksi":-0.59},
+            {"setpoin":30,"koreksi":-0.56},
+            {"setpoin":40,"koreksi":-0.50},
+            {"setpoin":50,"koreksi":-0.36},
+            {"setpoin":60,"koreksi":-0.17},
+            {"setpoin":70,"koreksi":0.26},
+            {"setpoin":80,"koreksi":0.72},
+            {"setpoin":90,"koreksi":1.48},
+            {"setpoin":95,"koreksi":1.75}
         ],
         "PP":[
-            {"setpoin":700.54,"koreksi":-0.188},
-            {"setpoin":750.52,"koreksi":-0.175},
-            {"setpoin":800.49,"koreksi":-0.155},
-            {"setpoin":850.46,"koreksi":-0.121},
-            {"setpoin":900.42,"koreksi":-0.090},
-            {"setpoin":950.37,"koreksi":-0.048},
-            {"setpoin":1000.33,"koreksi":-0.014},
-            {"setpoin":1052.79,"koreksi":0.023},
-            {"setpoin":1099.75,"koreksi":0.028}
+             {"setpoin":700,"koreksi":-0.210},
+            {"setpoin":750,"koreksi":-0.191},
+            {"setpoin":800,"koreksi":-0.180},
+            {"setpoin":850,"koreksi":-0.142},
+            {"setpoin":900,"koreksi":-0.103},
+            {"setpoin":950,"koreksi":-0.067},
+            {"setpoin":1000,"koreksi":-0.032},
+            {"setpoin":1050,"koreksi":0.010},
+            {"setpoin":1100,"koreksi":0.013}
         ],
         "WS":[
-            {"setpoin":0.6,"koreksi":0.39},
+            {"setpoin":0.6,"koreksi":0.41},
             {"setpoin":1.6,"koreksi":0.39},
-            {"setpoin":5.2,"koreksi":0.35},
-            {"setpoin":7.1,"koreksi":0.35},
-            {"setpoin":10.7,"koreksi":0.41},
-            {"setpoin":14.8,"koreksi":0.31},
-            {"setpoin":20.3,"koreksi":0.07}
+            {"setpoin":5.3,"koreksi":0.28},
+            {"setpoin":7.2,"koreksi":0.11},
+            {"setpoin":10.9,"koreksi":0.00050},
+            {"setpoin":15,"koreksi":0.053},
+            {"setpoin":20.6,"koreksi":-0.052}
         ],
         "WD":[
             {"setpoin":0,"koreksi":0.0},
-            {"setpoin":89,"koreksi":0.70},
-            {"setpoin":178,"koreksi":2},
-            {"setpoin":271,"koreksi":-1.30},
+            {"setpoin":90,"koreksi":-0.20},
+            {"setpoin":180,"koreksi":-0.20},
+            {"setpoin":270,"koreksi":-0.10},
             {"setpoin":360,"koreksi":0.0}
         ]
     }
