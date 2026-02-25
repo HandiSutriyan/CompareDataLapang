@@ -204,5 +204,53 @@
             {"setpoin":270,"koreksi":-0.10},
             {"setpoin":360,"koreksi":0.0}
         ]
+    },
+    "AWS-8":{
+        "TT":[
+            {"setpoin":0,"koreksi":-0.12},
+            {"setpoin":10,"koreksi":-0.09},
+            {"setpoin":20,"koreksi":-0.05},
+            {"setpoin":30,"koreksi":-0.04},
+            {"setpoin":40,"koreksi":-0.03}
+        ],
+        "RH":[
+             {"setpoin":15,"koreksi":-0.93},
+            {"setpoin":20,"koreksi":-0.84},
+            {"setpoin":30,"koreksi":-0.59},
+            {"setpoin":40,"koreksi":-0.35},
+            {"setpoin":50,"koreksi":-0.07},
+            {"setpoin":60,"koreksi":0.24},
+            {"setpoin":70,"koreksi":0.70},
+            {"setpoin":80,"koreksi":1.18},
+            {"setpoin":90,"koreksi":1.85},
+            {"setpoin":95,"koreksi":2.13}
+        ],
+        "PP":[
+             {"setpoin":700,"koreksi":-0.139},
+            {"setpoin":750,"koreksi":-0.124},
+            {"setpoin":800,"koreksi":-0.102},
+            {"setpoin":850,"koreksi":-0.091},
+            {"setpoin":900,"koreksi":-0.075},
+            {"setpoin":950,"koreksi":-0.058},
+            {"setpoin":1000,"koreksi":-0.040},
+            {"setpoin":1050,"koreksi":-0.020},
+            {"setpoin":1100,"koreksi":-0.018}
+        ],
+        "WS":[
+            {"setpoin":0.5,"koreksi":0.49},
+            {"setpoin":1.6,"koreksi":0.41},
+            {"setpoin":5.2,"koreksi":0.33},
+            {"setpoin":7.1,"koreksi":0.33},
+            {"setpoin":10.7,"koreksi":0.10},
+            {"setpoin":14.8,"koreksi":0.18},
+            {"setpoin":20.4,"koreksi":0.08}
+        ],
+        "WD":[
+            {"setpoin":0,"koreksi":0.0},
+            {"setpoin":90,"koreksi":-0.20},
+            {"setpoin":180,"koreksi":-0.20},
+            {"setpoin":270,"koreksi":-1.10},
+            {"setpoin":360,"koreksi":0.0}
+        ]
     }
 }
