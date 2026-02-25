@@ -251,6 +251,13 @@
             {"setpoin":180,"koreksi":-0.20},
             {"setpoin":270,"koreksi":-1.10},
             {"setpoin":360,"koreksi":0.0}
+        ],
+        "WT":[
+            {"setpoin":0,"koreksi":0.03},
+            {"setpoin":10,"koreksi":0.01},
+            {"setpoin":20,"koreksi":0.0},
+            {"setpoin":30,"koreksi":-0.01},
+            {"setpoin":40,"koreksi":-0.02}
         ]
     }
 }
