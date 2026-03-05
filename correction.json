@@ -157,6 +157,61 @@
             {"setpoin":360,"koreksi":0}
         ]
     },
+    "AWS-5":{
+        "TT":[
+            {"setpoin":0.327,"koreksi":-0.153},
+            {"setpoin":10.291,"koreksi":-0.63},
+            {"setpoin":20.2,"koreksi":-0.05},
+            {"setpoin":30.237,"koreksi":-0.021},
+            {"setpoin":40.247,"koreksi":-0.011}
+        ],
+        "RH":[
+             {"setpoin":15.028,"koreksi":-0.492},
+            {"setpoin":19.516,"koreksi":-0.344},
+            {"setpoin":29.551,"koreksi":-0.363},
+            {"setpoin":39.622,"koreksi":-0.330},
+            {"setpoin":49.884,"koreksi":-0.244},
+            {"setpoin":60.238,"koreksi":-0.008},
+            {"setpoin":70.486,"koreksi":0.376},
+            {"setpoin":80.915,"koreksi":0.881},
+            {"setpoin":91.503,"koreksi":1.635},
+            {"setpoin":95.032,"koreksi":1.794}
+        ],
+        "PP":[
+             {"setpoin":700.097,"koreksi":-0.163},
+            {"setpoin":750.099,"koreksi":-0.166},
+            {"setpoin":800.102,"koreksi":-0.138},
+            {"setpoin":850.098,"koreksi":-0.117},
+            {"setpoin":900.102,"koreksi":-0.098},
+            {"setpoin":950.103,"koreksi":-0.054},
+            {"setpoin":1000.098,"koreksi":-0.017},
+            {"setpoin":1050.102,"koreksi":0.012},
+            {"setpoin":1099.856,"koreksi":0.026}
+        ],
+        "WS":[
+            {"setpoin":0.985,"koreksi":0.41},
+            {"setpoin":2.011,"koreksi":0.401},
+            {"setpoin":5.430,"koreksi":0.265},
+            {"setpoin":7.335,"koreksi":0.265},
+            {"setpoin":10.852,"koreksi":0.117},
+            {"setpoin":14.978,"koreksi":0.245},
+            {"setpoin":20.475,"koreksi":0.0283}
+        ],
+        "WD":[
+            {"setpoin":0,"koreksi":0.0},
+            {"setpoin":89.8,"koreksi":2.240},
+            {"setpoin":179.7,"koreksi":1.4},
+            {"setpoin":269.6,"koreksi":-0.110},
+            {"setpoin":360,"koreksi":0.0}
+        ],
+        "WT":[
+            {"setpoin":0.335,"koreksi":-0.125},
+            {"setpoin":10.146,"koreksi":-0.156},
+            {"setpoin":20.048,"koreksi":-1.172},
+            {"setpoin":29.937,"koreksi":-0.183},
+            {"setpoin":40.002,"koreksi":-0.204}
+        ]
+    },
     "AWS-6":{
         "TT":[
             {"setpoin":0,"koreksi":-0.06},
