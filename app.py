@@ -9,8 +9,6 @@ import seaborn as sns
 from scipy.interpolate import interp1d
 from jinja2 import Template
 
-
-import pdfkit
 import json
 import openpyxl
 import base64
