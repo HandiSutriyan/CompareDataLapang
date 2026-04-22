@@ -170,7 +170,7 @@ if standard_files and uut_file:
 
     # exclude kolom TIMESTAMP dan RECORD dari konversi
     if id_logger == "CS":
-        exclude_cols_uut = ["TIMESTAMP","RECORD"]
+        exclude_cols_uut = [df_uut.columns[:1],"RECORD"]
     else:
         exclude_cols_uut = df_uut.columns[:2]
     
@@ -195,8 +195,8 @@ if standard_files and uut_file:
         ts_col_uut = col_t_uut.selectbox("Pilih kolom timestamp UUT", uut_headers)
 
     try:
-        df_standard[ts_col_std] = pd.to_datetime(df_standard[ts_col_std], errors='coerce')
-        df_uut[ts_col_uut] = pd.to_datetime(df_uut[ts_col_uut], errors='coerce')
+        df_standard[ts_col_std] = pd.to_datetime(df_standard[ts_col_std], format="%m/%d/%y %I:%M:%S %p", errors='coerce')
+        df_uut[ts_col_uut] = pd.to_datetime(df_uut[ts_col_uut], dayfirst=True, errors='coerce')
 
         # Hapus baris dengan timestamp yang gagal dikonversi
         df_standard = df_standard.dropna(subset=[ts_col_std])
