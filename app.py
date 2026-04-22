@@ -4,6 +4,7 @@ import streamlit as st
 
 from datetime import datetime
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.interpolate import interp1d
@@ -371,7 +372,8 @@ if standard_files and uut_file:
                     if (param_key == "Kecepatan Angin"):
                         df_merged_filtered[f"koreksi_{uut_col}"] = (df_merged_filtered[f"{par_code} STD-terkoreksi"] - df_merged_filtered[uut_col] + 180) % 360 -180
                     elif (param_key == "Radiasi Matahari"):
-                        df_merged_filtered[f"f-koreksi_{uut_col}"] = df_merged_filtered[f"{par_code} STD-terkoreksi"] / df_merged_filtered[uut_col]
+                        df_merged_filtered[f"koreksi_{uut_col}"] = np.where(df_merged_filtered[uut_col] < 100, np.nan,  df_merged_filtered[f"{par_code} STD-terkoreksi"] / df_merged_filtered[uut_col])
+                        # df_merged_filtered[f"f-koreksi_{uut_col}"] = df_merged_filtered[f"{par_code} STD-terkoreksi"] / df_merged_filtered[uut_col]
                     else:
                         df_merged_filtered[f"koreksi_{uut_col}"] = df_merged_filtered[f"{par_code} STD-terkoreksi"] - df_merged_filtered[uut_col]
                    
