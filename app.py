@@ -168,7 +168,12 @@ if standard_files and uut_file:
         
     df_uut.dropna(axis=1, how='all').reset_index(drop=True)
 
-    exclude_cols_uut = df_uut.columns[:2]
+    # exclude kolom TIMESTAMP dan RECORD dari konversi
+    if id_logger == "CS":
+        exclude_cols_uut = ["TIMESTAMP","RECORD"]
+    else:
+        exclude_cols_uut = df_uut.columns[:2]
+    
     df_uut = convert_columns_to_float(df_uut, exclude_cols_uut)
 
     st.subheader("📋 Pratinjau Data")
@@ -184,18 +189,14 @@ if standard_files and uut_file:
     # --- Konversi Timestamp ---
     st.subheader("🕒 Sinkronisasi Waktu")
     with st.expander("Ubahsuai sinkronisasi format waktu"):
-        col_t_std,col_f_std = st.columns(2)
-        col_t_uut,col_f_uut = st.columns(2)
+        col_t_std, col_t_uut = st.columns(2)
 
         ts_col_std = col_t_std.selectbox("Pilih kolom timestamp alat standar", std_headers)
         ts_col_uut = col_t_uut.selectbox("Pilih kolom timestamp UUT", uut_headers)
 
-        time_format_std = col_f_std.text_input("Format waktu alat standar", value="%m/%d/%y %I:%M:%S %p")
-        time_format_uut = col_f_uut.text_input("Format waktu UUT", value="%d/%m/%Y %H:%M:%S")  # <<== perbaikan format
-
     try:
-        df_standard[ts_col_std] = pd.to_datetime(df_standard[ts_col_std], format=time_format_std, errors='coerce')
-        df_uut[ts_col_uut] = pd.to_datetime(df_uut[ts_col_uut], format=time_format_uut, errors='coerce', dayfirst=True)
+        df_standard[ts_col_std] = pd.to_datetime(df_standard[ts_col_std], errors='coerce')
+        df_uut[ts_col_uut] = pd.to_datetime(df_uut[ts_col_uut], errors='coerce')
 
         # Hapus baris dengan timestamp yang gagal dikonversi
         df_standard = df_standard.dropna(subset=[ts_col_std])
