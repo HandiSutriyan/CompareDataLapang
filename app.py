@@ -197,7 +197,7 @@ if standard_files and uut_file:
 
     try:
         df_standard[ts_col_std] = pd.to_datetime(df_standard[ts_col_std], format="%m/%d/%y %I:%M:%S %p", errors='coerce')
-        df_uut[ts_col_uut] = pd.to_datetime(df_uut[ts_col_uut], dayfirst=True, errors='coerce')
+        df_uut[ts_col_uut] = pd.to_datetime(df_uut[ts_col_uut], errors='coerce')
 
         # Hapus baris dengan timestamp yang gagal dikonversi
         df_standard = df_standard.dropna(subset=[ts_col_std])
